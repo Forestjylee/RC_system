@@ -16,4 +16,4 @@ Created by
                        __/ |   
                       |___/    
 """
-from .local_detect import LocalFaceDetector
+from .local_detector import LocalFaceDetector
