@@ -1,0 +1,15 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+dlib-compiled = {file = "https://files.pythonhosted.org/packages/84/fe/c59de78540cf9f88ffbe412885617ac61ff30a9fdc9679e6bd3eb0c6e38c/dlib_compiled-19.16.99-cp36-cp36m-win_amd64.whl"}
+requests = "*"
+face-recognition = "*"
+opencv-python = "*"
+
+[requires]
+python_version = "3.6"
