@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 使用本地的人脸检测库进行人脸检测
+需要确保照片的清晰度，否则检测的准确率会一定程度下降
 @file: local_detector.py
 @time: 2019/3/13 12:16
 Created by 
