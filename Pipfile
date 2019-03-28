@@ -10,6 +10,7 @@ dlib-compiled = {file = "https://files.pythonhosted.org/packages/84/fe/c59de7854
 requests = "*"
 face-recognition = "*"
 opencv-python = "*"
+pymongo = "*"
 
 [requires]
 python_version = "3.6"
