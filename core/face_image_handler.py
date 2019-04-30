@@ -27,7 +27,7 @@ class FaceImageHandler(object):
     def __init__(
             self,
             image_path: str,
-            image_save_type: str='png'
+            image_save_type: str='png',
     ):
         """
         :param image_path: 图片文件路径
@@ -37,6 +37,13 @@ class FaceImageHandler(object):
         self._image_save_type = image_save_type
         self._original_image = self.read_image()
         self._face_locations = detect_faces(self._original_image)
+
+    def get_face_amount(self) -> int:
+        """
+        获取当前图片中人脸的数量
+        :return: 人脸的数量
+        """
+        return len(self._face_locations)
 
     def encoding_face(self) -> ndarray:
         """
