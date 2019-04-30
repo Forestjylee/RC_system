@@ -18,6 +18,7 @@ from flask import Flask, request, jsonify
 
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False     # 解决中文显示问题
 
 
 @app.route('/')
@@ -35,7 +36,11 @@ def api_face_detect():
     face_img = request.files['image']
     face_img.save('upload_img/temp_face.jpg')
     fi = FaceImageHandler(image_path='upload_img/temp_face.jpg')
-    return f"图片中所含人脸数量为: {fi.get_face_amount()}"
+    ret = {
+        'status_code': 200,
+        'message': f"图片中所含人脸数量为: {fi.get_face_amount()}"
+    }
+    return jsonify(ret)
 
 
 if __name__ == '__main__':
