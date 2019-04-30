@@ -87,7 +87,6 @@ Commands:
 
 &emsp;&emsp;可在[官网](https://www.mongodb.com/)下载安装包进行安装，过程十分轻松愉快。推荐一个MongoDB可视化的工具Robo 3T，也可以在它的官网上直接[下载](https://robomongo.org/download)。
 
-&emsp;&emsp;&emsp;&emsp;1、使用“--skip-lock”的原因使pipenv提供了一个严格的版本控制(lock)功能，但是lock的过程耗时十分漫长，由于本项目对于库的版本要求并不严格所以建议跳过此过程。
 
 
 
