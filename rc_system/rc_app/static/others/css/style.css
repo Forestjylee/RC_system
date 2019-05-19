@@ -1,0 +1,244 @@
+@charset "utf-8";
+
+body{
+	font-family: 'robotoregular';
+	height:100%;
+	width:100%;
+	overflow-x:hidden;
+	font-size:100%;
+	color:#1f1d22;
+	font-size:15px;
+}
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:#999999;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:#999999;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:#999999;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:#999999;
+}
+input[type="submit"]{
+	height:inherit;
+	width:inherit;
+	border:none;
+}
+.form-control, .form-control:focus{
+	box-shadow:none;
+}
+ol, ul{
+	padding:0;
+	margin:0;
+	list-style:none;
+}
+a, a:hover, a:focus{
+	outline:none;
+	text-decoration:none;
+	color:inherit;
+}
+small{
+	font-size:75% !important;
+	color:inherit !important;
+}
+h1,h2,h4{
+	margin:0 0 5px 0;
+}
+h3, h4{
+	font-family: 'robotomedium';
+}
+h3{
+	color:white;
+	margin:10px;
+}
+h2{
+	font-size:32px;
+}
+h3{
+	font-size:24px;
+}
+h4{
+	font-size:18px;
+}
+p{
+	font-size:15px;
+	color:#676767;
+}
+
+#student_message
+  {
+  font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+  width:100%;
+  border-collapse:collapse;
+  }
+
+#student_message td, #student_message th 
+  {
+  font-size:1em;
+  border:1px solid #98bf21;
+  padding:3px 7px 2px 7px;
+  color:#000000;
+  background-color:#EAF2D3;
+  }
+
+#student_message th 
+  {
+  font-size:1.1em;
+  text-align:left;
+  padding-top:5px;
+  padding-bottom:4px;
+  background-color:#A7C942;
+  }
+
+#student_message .in
+  {
+  width:2%;
+  }
+.student_right{
+  background:rgba(31, 63, 129, 0.9);
+  display: inline-table;
+  overflow:hidden;
+  position:static; top:0; z-index:990;
+  width:15%;
+  margin:0 0 0 1%;
+  text-align:center;
+}
+.student_right .student_class{
+	padding:30px 30px 15px 30px;
+}
+.student_right ul{
+  font-size:1em;
+  border:1px solid #98bf21;
+  padding:3px 7px 2px 7px;
+  color:#000000;
+  background-color:#EAF2D3;
+}
+.student_center{
+  background:rgba(31, 63, 129, 0.9);
+  display: inline-table;
+  overflow:hidden;
+  position:static; top:0; z-index:990;
+  width:60%;
+  margin:0 0 0 19%;
+}
+.student_center form.callus{
+	padding:30px 30px 15px 30px;
+}
+.center{
+  background:rgba(31, 63, 129, 0.9);
+  display: block;
+  overflow:hidden;
+  position:static; top:0; z-index:990;
+  width:60%;
+  margin:auto 20%;
+  padding:30px 30px 15px 30px;
+  position:relative;
+}
+.face_image{
+	width:100%;
+	height:100%;
+	text-align:center;
+	margin:20px auto ;
+}
+.class_mes{
+	font-size:20px;
+	color:white;
+	text-align:center;
+	margin:20px auto ;
+}
+.student_left{
+  background:rgba(31, 63, 129, 0.9);
+  display: inline-table;
+  overflow:hidden;
+  position: fixed;
+  border-radius: 9px;
+  top:20%; z-index:990;
+  width:12%;  
+}
+.student_left div{
+	padding:30px 30px 15px 30px;
+}
+.footer_third{
+	background:rgba(31, 63, 129, 0.9);	
+}
+.btn{
+	margin:5px 10px;
+	-webkit-transition-property: background;
+    transition-property: background;
+    -webkit-transition-duration: 0.5s;
+    transition-duration: 0.5s;
+    background:#ffd119;
+}
+.btn:hover, .btn:focus{
+	background:#1f1f1f;
+	color:#fff;
+}
+.btn:hover,.btn:focus{
+	background:#fff;
+	color:#000;
+}
+.center select{
+	display: inline-block;
+    padding: 6px 12px;
+    margin:5px 10px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.center p{
+	display: inline-block;
+    padding: 6px 12px;
+    margin:5px 10px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+	color:white;
+}
+textarea {
+	border:1px solid #d5dadf;
+	border-radius:4px;
+	background:#fff;
+	font-size:14px;
+}
+
+
+/*单选按钮*/
+.gcs-radio {
+ display: none;
+}
+.gcs-radio+label {
+  width: 15px;
+  height: 15px;
+  line-height: 100%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: bottom;
+  border: 1px solid gray;
+  border-radius: 50%;
+}
+.gcs-radio+label:hover {
+  border: 1px solid #2783FB;
+  cursor: pointer;
+}
+.gcs-radio:checked+label {
+  background: #2783FB;
+  border: 1px solid #2783FB;
+}
+.gcs-radio:checked+label:after {
+  content: "\2022";
+  font-size: 26px;
+  color: white;
+}
