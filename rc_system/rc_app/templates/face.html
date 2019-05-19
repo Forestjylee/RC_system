@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<!--加载静态文件-->
+{% load static %}
+<html lang="zh-hans">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>人脸点名</title>
+<link rel="stylesheet" type="text/css" href="{% static 'others/css/bootstrap.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'others/css/style.css' %}">
+<script src="{% static 'others/js/jquery-3.4.1.min.js' %}"></script>
+</head>
+<body>               
+               
+
+<!--Header-->
+<header>
+  <nav class="navbar">
+        <div class="col-sm-12">
+          <div class="navbar-header">
+            <a href="index.html"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""></a>
+          </div>
+          <div class="collapse navbar-collapse" id="navbar-menu">
+            <ul class="nav navbar-nav navbar-right" data-in="fadeIn" data-out="fadeOut">
+			  <li><a>{{ username }}老师，欢迎登陆系统！</a></li>
+			  <li><a href="manage_student.html">管理学生</a></li>
+              <li><a href="./face.html">人脸点名</a></li>
+			  <li><a>登出</a></li>
+            </ul>
+          </div></div>
+  </nav>
+</header>
+<!--Header Ends-->
+
+<!--Partners-->
+
+<div class="center" >
+  <h2 class="text-uppercase t_white bottom20 text-center">点名</h2>
+  <input type="file" name="photo" class="f" style="opacity:0;pointer-events: none;"/>
+  <div style="text-align:center"><p id="em">未上传文件</p></div>
+  <div style="margin:0 auto;width:55%">
+   <button class="btn" onclick="s()">选择文件</button>
+   <select>
+        <option>网络工程</option>
+        <option>信息安全</option>
+   </select>
+   <button type="submit" class="border_radius btn">上传并点名</button>
+   </div>
+   <div class="face_image" >
+   <img src="{% static 'others/images/1.jpg' %}">
+   </div>
+   <div class="class_mes">
+   实到人数/应到人数: 12/53
+   </br>出勤率：
+   </div>
+   
+<table id="student_message">
+<tr>
+<th>学号</th>
+<th>姓名</th>
+<th>是否到场</th>
+</tr>
+
+<tr>
+<td>201630601111</td>
+<td>王小明</td>
+<td>到场</td>
+</tr>
+
+<tr>
+<td>201630601111</td>
+<td>王小明</td>
+<td>到场</td>
+</tr>
+
+</table>
+     
+</div>		
+
+<!--Partners Ends-->
+
+<!--Footer-->
+<footer class="footer_third" style="margin-top:10%;bottom:0;">
+  <div class="container" >
+    <p style="color:white;margin-top:10px;">软工课设——人脸识别——2019.05.19 </p>
+  </div>
+</footer>
+
+<script>
+function s(){
+$(".f").click();
+}
+$('.f').change(function(){
+    $('#em').text($('.f').val());
+});
+</script>
+</body>
+</html>

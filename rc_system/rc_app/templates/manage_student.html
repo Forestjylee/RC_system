@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>管理学生</title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>               
+               
+
+<!--Header-->
+<header>
+  <nav class="navbar">
+        <div class="col-sm-12">
+          <div class="navbar-header">
+            <a href="index.html"><img src="images/logo.png" class="logo" alt=""></a>
+          </div>
+          <div class="collapse navbar-collapse" id="navbar-menu">
+            <ul class="nav navbar-nav navbar-right" data-in="fadeIn" data-out="fadeOut">
+			  <li><a>老师，欢迎登陆系统！</a></li>
+			  <li><a href="./manage_student.html">管理学生</a></li>
+              <li><a href="./face.html">人脸点名</a></li>
+			  <li><a>登出</a></li>
+            </ul>
+          </div></div>
+  </nav>
+</header>
+<!--Header Ends-->
+
+<!--Partners-->
+
+<div class="student_left">
+    <div>   
+        <button type="submit" class="border_radius btn" onclick="selectall()">选择全部</button><br>
+		<button type="submit" class="border_radius btn">删除学生</button>	<br>
+        <button type="submit" class="border_radius btn"><a href="./T_create_student.html">增加学生</a></button> <br>  
+        <button type="submit" class="border_radius btn">批量导入学生</button> 		
+    </div>
+</div>
+
+<div class="student_center">
+  <form class="callus">
+  <h2 class="text-uppercase t_white bottom20 text-center">学生信息</h2>
+    
+<table id="student_message">
+<tr>
+<th>学号</th>
+<th>姓名</th>
+<th>创建/修改时间</th>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+<tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">201630601111</td>
+<td>王小明</td>
+<td>2018-12-1</td>
+</tr>
+
+</table>
+ </form></div>		
+
+<div class="student_right">
+<div class="student_class">
+<h2>班级</h2>
+<ul>
+    <li><a href="#.">网络工程</a></li>
+    <li><a href="#.">信息安全</a></li>
+</ul>
+</div>
+</div>
+            
+</div>
+<!--Partners Ends-->
+
+<!--Footer-->
+<footer class="footer_third" style="margin-top:10%;bottom:0;">
+  <div class="container" >
+    <p style="color:white;margin-top:10px;">软工课设——人脸识别——2019.05.19 </p>
+  </div>
+</footer>
+
+</body>
+</html>
