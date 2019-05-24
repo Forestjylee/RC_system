@@ -5,13 +5,17 @@ rc_app的url路由分发
 @time: 2019/5/19 11:00
 Created by Junyi 
 """
-from django.urls import path
+from django.conf import settings
+from django.urls import path, re_path
+from django.views.static import serve
+
 from . import views
 
 
 app_name = 'rc_app'
 
 urlpatterns = [
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     path('', views.start_page, name='起始页'),
     path('login/', views.user_login, name='登录'),
     path('logout/', views.user_logout, name='登出'),

@@ -5,8 +5,8 @@ from django.shortcuts import render, render_to_response, get_object_or_404, redi
 
 from .models import User
 from .app_helper.decorators import is_post_or_get
-from .app_helper.views_helper import (get_user_or_none, get_user_upload_file_directory, \
-                                      save_upload_face_photo, detect_and_compare_faces)
+from .app_helper.views_helper import (get_user_or_none,  save_upload_face_photo,
+                                      detect_and_compare_faces)
 
 # Create your views here.
 
@@ -24,7 +24,7 @@ def user_login(request):
         login(request, user)
         return redirect('rc_app:主页', username=user.username)
     else:
-        return render(request, 'login.html', {'error': '密码错误'})
+        return render(request, 'login.html', {'error': '用户名或密码错误'})
 
 
 def user_logout(request):
@@ -40,8 +40,17 @@ def home_page(request, username: str):
         file_obj = request.FILES.get('face_photo')
         filepath, result = save_upload_face_photo(file_obj, username)
         if result:
-            detect_and_compare_faces(username, filepath)
-
+            file_type, face_amount = detect_and_compare_faces(username, filepath)
+            if not file_type:
+                return render(request, 'face.html', {
+                    'username': username,
+                    'error': '暂不支持您上传的图片格式，请上传png、jpg、jpeg格式的文件'
+                })
+            return render(request, 'face.html', {
+                'username': username,
+                'file_type': file_type,
+                'face_amount': face_amount
+            })
     else:
         return render(request, 'face.html', {'username': username})
 

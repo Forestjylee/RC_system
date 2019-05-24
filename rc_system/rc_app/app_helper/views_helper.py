@@ -69,7 +69,7 @@ def create_students(filepath: str, course: Course) -> bool:
     return True
 
 
-@deal_exceptions(return_when_exceptions=False)
+# @deal_exceptions(return_when_exceptions=False)
 def create_student(student_id: str, student_name: str, class_name: str, course: Course) -> bool:
     """
     在数据库Student表中创建一个新的学生
@@ -97,7 +97,7 @@ def create_student(student_id: str, student_name: str, class_name: str, course: 
     return True
 
 
-@deal_exceptions(return_when_exceptions=False)
+# @deal_exceptions(return_when_exceptions=False)
 def create_course(course_name: str, teacher: User, student_amount: int) -> bool:
     """
     创建课程
@@ -131,6 +131,7 @@ def create_student_absent_situation(student: Student, course: Course, absent_or_
     sas.save()
 
 
+@deal_exceptions(return_when_exceptions=(None, None))
 def detect_and_compare_faces(username: str, filepath: str) -> bool:
     """
     人脸检测和比对
@@ -140,9 +141,11 @@ def detect_and_compare_faces(username: str, filepath: str) -> bool:
     """
     face_handler = FaceImageHandler(image_path=filepath)
     face_amount = face_handler.get_face_amount()
+    file_type = face_handler._image_save_type
     face_handler.save_marked_image(
-            filepath=_get_marked_photo_filepath(username, file_type=face_handler._image_save_type)
+            filepath=_get_marked_photo_filepath(username, file_type=file_type)
     )
+    return file_type, face_amount
     #TODO 人脸比对
 
 
@@ -214,7 +217,7 @@ def save_upload_face_photo(file_obj, username: str) -> tuple:
     """
     file_directory = _get_user_upload_file_directory(username)
     file_type = os.path.splitext(file_obj.name)[-1]
-    filename = f"{str(datetime.now())}{file_type}"
+    filename = f"{str(datetime.now().strftime('%Y%m%d%H%M%S'))}{file_type}"
     filepath = os.path.join(file_directory, filename)
     return filepath, _save_upload_file(file_obj, filepath)
 
