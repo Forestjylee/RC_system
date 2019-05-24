@@ -128,16 +128,56 @@ p{
 .student_center form.callus{
 	padding:30px 30px 15px 30px;
 }
+
+.mainframe-content{
+    margin:40px 0;
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
+.mainframe-wrap{
+    width:1240px;
+    margin:0 auto;
+    display: block;
+}
+
+.wrap{
+    margin:0;
+    overflow: hidden;
+    zoom: 1;
+    display: block;
+}
+
 .center{
-  background:rgba(31, 63, 129, 0.9);
-  display: block;
+    height:600px;
+    width:880px;
+    display: inline-block;
+    float: left;
+    background: #1f1d22;
+    margin:0;
+
+  /*display: block;
   overflow:hidden;
   position:static; top:0; z-index:990;
   width:60%;
-  margin:auto 20%;
+  margin:40px;
   padding:30px 30px 15px 30px;
   position:relative;
+  */
+
+
 }
+
+.side{
+    background: #dcdcdc;
+    height: 600px;
+    width:320px;
+    display: inline-block;
+    float: right;
+    overflow: hidden;
+}
+
 .face_image{
 	width:100%;
 	height:100%;
@@ -175,10 +215,10 @@ p{
 }
 .btn:hover, .btn:focus{
 	background:#1f1f1f;
-	color:#fff;
+    color: #ffffff;
 }
 .btn:hover,.btn:focus{
-	background:#fff;
+	background:#ffffff;
 	color:#000;
 }
 .center select{
@@ -212,6 +252,15 @@ textarea {
 	border-radius:4px;
 	background:#fff;
 	font-size:14px;
+}
+
+.name_id {
+    float: left;
+
+}
+
+.name_photo {
+    float: right;
 }
 
 

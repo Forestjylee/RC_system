@@ -15,7 +15,8 @@ urlpatterns = [
     path('', views.start_page, name='起始页'),
     path('login/', views.user_login, name='登录'),
     path('logout/', views.user_logout, name='登出'),
-    path('home/<username>/', views.home_page, name='主页')
+    path('home/<username>/', views.home_page, name='主页'),
+    path('manage_student/<username>/', views.manage_student, name='管理学生')
 ]
 
 handler404 = views.page_not_found

@@ -17,82 +17,102 @@
 <!--Header-->
 <header>
   <nav class="navbar">
-        <div class="col-sm-12">
+        <div class="col-sm-12" style="background: #2e6da4">
           <div class="navbar-header">
-            <a href="index.html"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""></a>
+            <a href="{% url 'rc_app:主页' username %}"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""
+                                      style="width: 240px; height: 100px;position: relative;left: 150px"></a>
           </div>
-          <div class="collapse navbar-collapse" id="navbar-menu">
+        </div>
+      <div>
+          <div class="col-sm-12" style="background:#dcdcdc;">
+          <div class="collapse navbar-collapse" id="navbar-menu" style="position: relative; right: 150px">
             <ul class="nav navbar-nav navbar-right" data-in="fadeIn" data-out="fadeOut">
-			  <li><a>{{ username }}老师，欢迎登陆系统！</a></li>
-			  <li><a href="manage_student.html">管理学生</a></li>
-              <li><a href="./face.html">人脸点名</a></li>
-			  <li><a>登出</a></li>
+                <li><a style="font-family:等线; font-size: 17px">{{ username }}老师，欢迎登陆系统！</a></li>
+                <li><a style="font-family:等线; font-size: 17px" href="{% url 'rc_app:主页' username %}">人脸点名</a></li>
+                <li><a style="font-family:等线; font-size: 17px" href="{% url 'rc_app:管理学生' username %}">管理学生</a></li>
+                <li><a style="font-family:等线; font-size: 17px" >登出</a></li>
             </ul>
-          </div></div>
+          </div>
+          </div>
+        </div>
   </nav>
 </header>
 <!--Header Ends-->
 
 <!--Partners-->
+<div class="mainframe-content">
+    <div class="mainframe-wrap">
+        <div class="wrap">
+            <div class="center" style="position: relative">
+                <img src="{% static 'others/images/original.png' %}" style="width: 100%; height:100%">
+                <div class="upload_content" style="position:absolute;top:70%;left: 15%;">
+                    <button class="click" onclick="s()" style="background:url({% static 'others/images/click.jpg' %}) no-repeat;
+                    background-size: cover; width: 268px; height: 110px; border-color: #2e6da4;
+                    border-style: double; border-width: 3px; border-radius: 15px"; margin="0";>
+                    </button>
+                </div>
+            </div>
+            <div class="side">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="face_photo" class="f" style="opacity:0;pointer-events: none;"/>
+                    <button class="upload" type="submit" style="display: none"></button>
+                </form>
+                <div style="margin:0 auto;width:55%">
+                    <select class="select_option">
+                    <option>网络工程</option>
+                    <option>信息安全</option>
+                    </select>
+                    <button class="btn" onclick="s()">继续添加文件</button>
+                </div>
+                <div class="class_mes">
+                    实到人数/应到人数: 12/53
+                    </br>出勤率：
+                </div>
+                <div class="info_list">
 
-<div class="center" >
-  <h2 class="text-uppercase t_white bottom20 text-center">点名</h2>
-  <input type="file" name="photo" class="f" style="opacity:0;pointer-events: none;"/>
-  <div style="text-align:center"><p id="em">未上传文件</p></div>
-  <div style="margin:0 auto;width:55%">
-   <button class="btn" onclick="s()">选择文件</button>
-   <select>
-        <option>网络工程</option>
-        <option>信息安全</option>
-   </select>
-   <button type="submit" class="border_radius btn">上传并点名</button>
-   </div>
-   <div class="face_image" >
-   <img src="{% static 'others/images/1.jpg' %}">
-   </div>
-   <div class="class_mes">
-   实到人数/应到人数: 12/53
-   </br>出勤率：
-   </div>
-   
-<table id="student_message">
-<tr>
-<th>学号</th>
-<th>姓名</th>
-<th>是否到场</th>
-</tr>
-
-<tr>
-<td>201630601111</td>
-<td>王小明</td>
-<td>到场</td>
-</tr>
-
-<tr>
-<td>201630601111</td>
-<td>王小明</td>
-<td>到场</td>
-</tr>
-
-</table>
-     
-</div>		
+                <table id="student_message">
+                    <tr>
+                        <th>学号</th>
+                        <th>姓名</th>
+                        <th>上次到场时间</th>
+                        <th>出勤次数</th>
+                    </tr>
+                    <tr>
+                        <td>201630601111</td>
+                        <td>王小明</td>
+                        <td>2019.5.12</td>
+                        <td>12</td>
+                    </tr>
+                    <tr>
+                        <td>201630601111</td>
+                        <td>王小明</td>
+                        <td>2019.4.3</td>
+                        <td>4</td>
+                    </tr>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!--Partners Ends-->
 
 <!--Footer-->
 <footer class="footer_third" style="margin-top:10%;bottom:0;">
   <div class="container" >
-    <p style="color:white;margin-top:10px;">软工课设——人脸识别——2019.05.19 </p>
+    <p style="color:white;margin-top:10px;">软工课设——点名系统——2019.05.19 </p>
   </div>
 </footer>
 
 <script>
 function s(){
-$(".f").click();
+    $(".f").click();
 }
 $('.f').change(function(){
     $('#em').text($('.f').val());
+    $(".upload").click();
 });
 </script>
 </body>

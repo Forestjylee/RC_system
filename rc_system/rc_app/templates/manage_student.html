@@ -1,12 +1,14 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<!--加载静态文件-->
+{% load static %}
+<html lang="zh-hans">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <title>管理学生</title>
-<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="css/style.css">
+<link rel="stylesheet" type="text/css" href="{% static 'others/css/bootstrap.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'others/css/style.css' %}">
 </head>
 <body>               
                
@@ -16,14 +18,14 @@
   <nav class="navbar">
         <div class="col-sm-12">
           <div class="navbar-header">
-            <a href="index.html"><img src="images/logo.png" class="logo" alt=""></a>
+            <a href="{% url 'rc_app:主页' username %}"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""></a>
           </div>
           <div class="collapse navbar-collapse" id="navbar-menu">
             <ul class="nav navbar-nav navbar-right" data-in="fadeIn" data-out="fadeOut">
 			  <li><a>老师，欢迎登陆系统！</a></li>
-			  <li><a href="./manage_student.html">管理学生</a></li>
-              <li><a href="./face.html">人脸点名</a></li>
-			  <li><a>登出</a></li>
+              <li><a href="{% url 'rc_app:主页' username %}">人脸点名</a></li>
+              <li><a href="{% url 'rc_app:管理学生' username %}">管理学生</a></li>
+			  <li><a href="">登出</a></li>
             </ul>
           </div></div>
   </nav>

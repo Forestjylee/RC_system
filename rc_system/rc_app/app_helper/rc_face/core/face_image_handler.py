@@ -90,6 +90,31 @@ class FaceImageHandler(object):
             )
         self._show_image(image=new_img, image_name="Recognized Photo")
 
+    def save_marked_image(self, filepath: str) -> bool:
+        """
+        将黄色框标注出来的人脸图片保存到指定路径
+        :param filepath: 保存的路径
+        :return: 是否保存成功
+        """
+        try:
+            new_img = self._original_image.copy()
+            for face_location in self._face_locations:
+                top = face_location[0]
+                right = face_location[1]
+                bottom = face_location[2]
+                left = face_location[3]
+                cv2.rectangle(
+                    new_img,
+                    (left, top),
+                    (right, bottom),
+                    color=(0, 255, 255),
+                    thickness=2,
+                )
+            cv2.imwrite(filepath, new_img)
+            return True
+        except Exception:
+            return False
+
     def save_faces(self, directory: str) -> bool:
         """
         先确保文件夹已经存在

@@ -8,7 +8,6 @@ Created by Junyi
 import os
 import shutil
 import zipfile
-from typing import Any
 from pandas import read_excel, DataFrame
 
 from .decorators import deal_exceptions
