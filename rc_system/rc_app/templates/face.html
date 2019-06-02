@@ -5,12 +5,15 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="HandheldFriendly" content="true">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <title>人脸点名</title>
-<link rel="stylesheet" type="text/css" href="{% static 'others/css/bootstrap.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'others/css/style.css' %}">
+<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="{% static 'others/js/jquery-3.4.1.min.js' %}"></script>
-<script src="{% static 'others/js/bootstrap.min.js' %}"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
 </head>
@@ -22,7 +25,7 @@
   <nav class="navbar">
         <div class="col-sm-12" style="background: #0c7ed9">
           <div class="navbar-header">
-            <a href="{% url 'rc_app:主页' username %}"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""
+            <a href="{% url 'rc_app:主页' username 0 %}"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""
                                       style="width: 240px; height: 100px;position: relative;left: 150px"></a>
           </div>
         </div>
@@ -30,10 +33,10 @@
           <div class="col-sm-12" style="background:#dcdcdc;">
           <div class="collapse navbar-collapse" id="navbar-menu" style="position: relative; right: 150px">
             <ul class="nav navbar-nav navbar-right" data-in="fadeIn" data-out="fadeOut">
-                <li><a style="font-family:等线; font-size: 17px">{{ username }}老师，欢迎登陆系统！</a></li>
-                <li><a style="font-family:等线; font-size: 17px" href="{% url 'rc_app:主页' username %}">人脸点名</a></li>
-                <li><a style="font-family:等线; font-size: 17px" href="{% url 'rc_app:管理学生' username %}">管理学生</a></li>
-                <li><a style="font-family:等线; font-size: 17px" href="{% url 'rc_app:登出' %}">登出</a></li>
+                <li><a style="font-family:等线; font-size: 17px; color: black">{{ username }}老师，欢迎登陆系统</a></li>
+                <li><a style="font-family:等线; font-size: 17px; color: black" href="{% url 'rc_app:主页' username 0 %}">人脸点名</a></li>
+                <li><a style="font-family:等线; font-size: 17px; color: black" href="{% url 'rc_app:管理课程' username %}">个人中心</a></li>
+                <li><a style="font-family:等线; font-size: 17px; color: black" href="{% url 'rc_app:登出' %}" >登出</a></li>
             </ul>
           </div>
           </div>
@@ -48,7 +51,6 @@
                     background-size: cover; width: 80px; height: 84px;border-color: #86bac8;
                     border-style: solid; border-width: 3px; border-radius: 15px";></button>
 </div>
-
 
 <div class="mainframe-content">
     <div class="mainframe-wrap">
@@ -73,24 +75,29 @@
                     <button class="upload" type="submit" style="display: none"></button>
                 </form>
                 <div>
-                    <select style="font-size: 36px; width: 300px; color: #0c7ed9">
-                    <option>网络工程</option>
-                    <option>信息安全</option>
+                    <select id="cse" style="font-size: 36px; width: 300px; color: #0c7ed9" onchange="window.location.href=this.value">
+                        {% for course in courses %}
+                            <option id="{{ course.course_id }}" value="{% url 'rc_app:主页' username course.course_id %}">{{ course.name }}</option>
+                        {% endfor %}
                     </select>
                 </div>
-                {% if face_amount %}
-                    <div class="class_mes">
-                        实到人数/应到人数: &nbsp;{{ face_amount }}/53
-                        </br>出勤率：
-                    </div>
-                {% endif %}
+                <div class="class_mes">
+                    实到人数/应到人数:&nbsp;&nbsp;&nbsp;{{ face_amount }}
+                    {% if student_amount %}
+                    /{{ student_amount }}
+                    {% endif %}
+                    </br>出勤率:&nbsp;&nbsp;&nbsp;{{ attendance_rate }}
+                    {% if attendance_rate %}
+                    %
+                    {% endif %}
+                </div>
                 <div class="info_list">
                     <div>
                     <div style="position: relative; float: left; margin-left:10px ">
-                        <p style="color: red; font-family: 等线; font-size: 1.2em">未检测到同学名单:</p>
+                        <p style="color: red; font-family: 等线; font-size: 1.2em">未检测到学生名单:</p>
                     </div>
                         <div style="position: relative; float: right; margin-right:10px">
-                            <u href="" style="color: #0c7ed9; font-family: 等线">总名单详情</u>
+                            <u><a style="color: #0c7ed9; font-family: 等线" href="./Specific_Info.html" target="_blank">名单详情</a></u>
                         </div>
                 </div>
                 <table id="unshow_student_message" >
@@ -153,12 +160,7 @@ $(document).ready(function() {
 } );
 
 
-
-{% if error %}
-    alert("{{ error }}");
-    window.history.go(-1);
-{% endif %}
-
+document.getElementById("cse")[{{ course_id }}-1].selected=true;
 
 </script>
 </body>

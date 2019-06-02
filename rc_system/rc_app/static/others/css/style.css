@@ -41,6 +41,7 @@ a, a:hover, a:focus{
 	text-decoration:none;
 	color:inherit;
 }
+
 small{
 	font-size:75% !important;
 	color:inherit !important;
@@ -221,21 +222,15 @@ p{
 .footer_third{
 	background:#0c7ed9;
 }
-.btn{
-	margin:5px 10px;
-	-webkit-transition-property: background;
-    transition-property: background;
-    -webkit-transition-duration: 0.5s;
-    transition-duration: 0.5s;
-    background:#ffd119;
-}
-.btn:hover, .btn:focus{
-	background:#1f1f1f;
-    color: #ffffff;
-}
-.btn:hover,.btn:focus{
-	background:#ffffff;
-	color:#000;
+.mybtn{
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
 }
 .center select{
 	display: inline-block;
@@ -285,6 +280,38 @@ textarea {
     left:0px;
     right:0px;
     bottom: 0px;
+}
+
+.headline-noinfo {
+    position: relative;
+}
+
+.headline-noinfo p{
+    color:#0c7ed9;
+    font-size: 48px;
+    text-align: left;
+}
+
+.headline {
+    height: 130px;
+}
+
+.headline-text-info{
+    position: relative;
+    float: left;
+    display:inline-block;
+}
+
+.headline-text-info p{
+    color:#0c7ed9;
+    font-size: 48px;
+    text-align: left;
+}
+
+.left_selection_list {
+    position: relative;
+    float: right;
+    margin-top: 100px;
 }
 
 /*单选按钮*/

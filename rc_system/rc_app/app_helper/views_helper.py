@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import render, get_object_or_404
 
 from ..models import User, Student, Course, StudentCourse, StudentPicture, StudentAbsentSituation
-from .io import read_excel_file
+from .io import read_excel_file, decompress_zip
 from .decorators import deal_exceptions
 from .rc_face import FaceImageHandler, LocalFaceComparer
 
@@ -47,6 +47,17 @@ def get_user_or_none(request):
     password = request.POST['password']
     user = authenticate(username=username, password=password)
     return user
+
+
+def get_courses_or_none(teacher: User) -> list:
+    """
+    根据老师对象查询老师管理的课程
+    :param request:
+    :param teacher: 老师对象
+    :return: 所有老师管理的课程
+    """
+    courses = Course.objects.filter(teacher=teacher)
+    return courses if courses else []
 
 
 def create_students(filepath: str, course: Course) -> bool:
@@ -142,6 +153,7 @@ def detect_and_compare_faces(username: str, filepath: str) -> bool:
     face_handler = FaceImageHandler(image_path=filepath)
     face_amount = face_handler.get_face_amount()
     file_type = face_handler._image_save_type
+    encoding_faces_in_pictures = face_handler.encoding_faces()
     face_handler.save_marked_image(
             filepath=_get_marked_photo_filepath(username, file_type=file_type)
     )
@@ -163,6 +175,25 @@ def save_student_infos(file_obj, username: str) -> tuple:
     if file_type not in ['.xlsx', 'xls']:
         return filepath, False
     return filepath, _save_upload_file(file_obj, filepath)
+
+
+def save_student_face_photos(file_obj, username: str) -> bool:
+    """
+    1、将上传的包含多个学生照片的压缩包解压
+    :param file_obj: 文件对象
+    :param username: 老师用户名
+    :return: 是否保存成功
+    """
+    target_directory = os.path.join(os.path.join(settings.BASE_DIR, 'upload'), username)
+    file_directory = _get_user_upload_file_directory(username)
+    file_type = os.path.splitext(file_obj.name)[-1]
+    filename = f"{str(datetime.now())}{file_type}"
+    filepath = os.path.join(file_directory, filename)
+    if file_type == '.zip':
+        return False
+    if decompress_zip(filepath, target_directory=target_directory):
+        pass
+    return False
 
 
 def save_student_face_photo(file_obj, student_id: str, student_name: str) -> dict:

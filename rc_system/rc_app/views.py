@@ -6,7 +6,7 @@ from django.shortcuts import render, render_to_response, get_object_or_404, redi
 from .models import User
 from .app_helper.decorators import is_post_or_get
 from .app_helper.views_helper import (get_user_or_none,  save_upload_face_photo,
-                                      detect_and_compare_faces)
+                                      detect_and_compare_faces, get_courses_or_none)
 
 # Create your views here.
 
@@ -22,7 +22,7 @@ def user_login(request):
     user = get_user_or_none(request)
     if user is not None:
         login(request, user)
-        return redirect('rc_app:主页', username=user.username)
+        return redirect('rc_app:主页', username=user.username, course_id=0)
     else:
         return render(request, 'login.html', {'error': '用户名或密码错误'})
 
@@ -34,25 +34,62 @@ def user_logout(request):
 
 
 @login_required
-def home_page(request, username: str):
+def home_page(request, username: str, course_id: str):
     """主页"""
+    context = {}
+    course_id = int(course_id)
+    teacher = get_object_or_404(User, username=username)
+    courses = get_courses_or_none(teacher=teacher)
+    context['username'] = username
+    context['courses'] = courses
+    context['course_id'] = course_id
+    if course_id:
+        for course in courses:
+            if course.course_id == course_id:
+                context['student_amount'] = course.student_amount
+                break
+    elif courses:
+        return redirect('rc_app:主页', username=username, course_id=courses[0].course_id)
     if request.method == 'POST':
         file_obj = request.FILES.get('face_photo')
         filepath, result = save_upload_face_photo(file_obj, username)
         if result:
             file_type, face_amount = detect_and_compare_faces(username, filepath)
             if not file_type:
-                return render(request, 'face.html', {
-                    'username': username,
-                    'error': '暂不支持您上传的图片格式，请上传png、jpg、jpeg格式的文件'
-                })
-            return render(request, 'face.html', {
-                'username': username,
-                'file_type': file_type,
-                'face_amount': face_amount
-            })
-    else:
-        return render(request, 'face.html', {'username': username})
+                context['error'] = '暂不支持您上传的图片格式，请上传png、jpg、jpeg格式的图片'
+            else:
+                context['file_type'] = file_type
+                context['face_amount'] = face_amount
+    return render(request, 'face.html', context=context)
+
+
+@login_required
+def specific_name_list(request, username: str):
+    """学生点名详细名单"""
+    return render(request, 'Specific_info.html', {'username': username})
+
+
+@login_required
+def manage_course(request, username: str):
+    """管理课程(个人中心)"""
+    context = {'username': username}
+    teacher = get_object_or_404(User, username=username)
+    courses = get_courses_or_none(teacher=teacher)
+    context['courses'] = courses
+    return render(request, 'Class_Info.html', context=context)
+
+
+@login_required
+def manage_course_student(request, username: str, course_id: str):
+    """管理课程中的学生"""
+    context = {'username': username}
+    course_id = int(course_id)
+    teacher = get_object_or_404(User, username=username)
+    courses = get_courses_or_none(teacher=teacher)
+    for course in courses:
+        if course.course_id == course_id:
+            context['course'] = course
+    return render(request, 'Class_Member.html', context=context)
 
 
 @login_required
@@ -61,6 +98,6 @@ def manage_student(request, username: str):
     return render(request, 'manage_student.html', {'username': username})
 
 
-def page_not_found(request, exception=None):
+def page_not_found(request, exception: Exception=None):
     """404"""
     return render_to_response('404.html')

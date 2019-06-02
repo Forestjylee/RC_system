@@ -11,6 +11,7 @@ class Student(models.Model):
     student_id = models.CharField(verbose_name="学号", max_length=30)
     name = models.CharField(verbose_name="姓名", max_length=30)
     class_name = models.CharField(verbose_name="班级", max_length=30)
+    absent_times = models.IntegerField(verbose_name="缺勤次数", default=0)
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     last_updated_time = models.DateTimeField(auto_now=True, verbose_name="最后修改时间")
 
@@ -29,6 +30,7 @@ class Course(models.Model):
     name = models.CharField(verbose_name="课程", max_length=30)
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="老师")
     student_amount = models.IntegerField(verbose_name="总人数", default=0)
+    course_time = models.CharField(verbose_name="上课时间", max_length=50, default="未知")
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     last_updated_time = models.DateTimeField(auto_now=True, verbose_name="最后更新时间")
 
@@ -72,6 +74,8 @@ class StudentAbsentSituation(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="课程")
     absent_or_late = models.BooleanField(verbose_name="缺席还是迟到", default=True,
                                          choices=((True, '缺席'), (False, '迟到')))     # 默认缺席(True)
+    is_ask_for_leave = models.BooleanField(verbose_name="是否请假", default=False,
+                                           choices=((True, '已请假'), (False, '未请假')))
     create_time = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     last_updated_time = models.DateTimeField(verbose_name="最后修改时间", auto_now=True)
 

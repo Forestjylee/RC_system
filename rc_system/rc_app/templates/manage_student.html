@@ -1,5 +1,4 @@
 ﻿<!DOCTYPE html>
-<!--加载静态文件-->
 {% load static %}
 <html lang="zh-hans">
 <head>
@@ -10,25 +9,31 @@
 <link rel="stylesheet" type="text/css" href="{% static 'others/css/bootstrap.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'others/css/style.css' %}">
 </head>
-<body>               
-               
+<body>
+
 
 <!--Header-->
 <header>
-  <nav class="navbar">
-        <div class="col-sm-12">
-          <div class="navbar-header">
-            <a href="{% url 'rc_app:主页' username %}"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""></a>
-          </div>
-          <div class="collapse navbar-collapse" id="navbar-menu">
-            <ul class="nav navbar-nav navbar-right" data-in="fadeIn" data-out="fadeOut">
-			  <li><a>老师，欢迎登陆系统！</a></li>
-              <li><a href="{% url 'rc_app:主页' username %}">人脸点名</a></li>
-              <li><a href="{% url 'rc_app:管理学生' username %}">管理学生</a></li>
-			  <li><a href="">登出</a></li>
-            </ul>
-          </div></div>
-  </nav>
+    <nav class="navbar">
+        <div class="col-sm-12" style="background: #0c7ed9">
+            <div class="navbar-header">
+                <a href="index.html"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""
+                                          style="width: 240px; height: 100px;position: relative;left: 150px"></a>
+            </div>
+        </div>
+        <div>
+            <div class="col-sm-12" style="background:#dcdcdc;">
+                <div class="collapse navbar-collapse" id="navbar-menu" style="position: relative; right: 150px">
+                    <ul class="nav navbar-nav navbar-right" data-in="fadeIn" data-out="fadeOut">
+                        <li><a style="font-family:等线; font-size: 17px">杨灿老师，欢迎登陆系统！</a></li>
+                        <li><a style="font-family:等线; font-size: 17px" href="./face.html">人脸点名</a></li>
+                        <li><a style="font-family:等线; font-size: 17px" href="./Class_Info.html">管理学生</a></li>
+                        <li><a style="font-family:等线; font-size: 17px" >登出</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
 </header>
 <!--Header Ends-->
 
@@ -49,26 +54,28 @@
     
 <table id="student_message">
 <tr>
-<th>学号</th>
 <th>姓名</th>
-<th>创建/修改时间</th>
+<th>学号</th>
+<th>上次到场时间</th>
+    <th>出勤次数</th>
 </tr>
 
 <tr>
-<td><input name="in" type="checkbox">201630601111</td>
-<td>王小明</td>
+<td><input name="in" type="checkbox">王小明</td>
+<td>2016306011111</td>
+<td>2018-12-1</td>
+    <td>12</td>
+</tr>
+
+<tr>
+<td><input name="in" type="checkbox">王小明</td>
+<td>2016306011111</td>
 <td>2018-12-1</td>
 </tr>
 
 <tr>
-<td><input name="in" type="checkbox">201630601111</td>
-<td>王小明</td>
-<td>2018-12-1</td>
-</tr>
-
-<tr>
-<td><input name="in" type="checkbox">201630601111</td>
-<td>王小明</td>
+<td><input name="in" type="checkbox">王小明</td>
+<td>2016306011111</td>
 <td>2018-12-1</td>
 </tr>
 
@@ -122,7 +129,8 @@
 </tr>
 
 </table>
- </form></div>		
+ </form>
+</div>
 
 <div class="student_right">
 <div class="student_class">
@@ -138,7 +146,7 @@
 <!--Partners Ends-->
 
 <!--Footer-->
-<footer class="footer_third" style="margin-top:10%;bottom:0;">
+<footer class="footer_third" style="margin-top:10%;bottom:0;background-color: #0c7ed9">
   <div class="container" >
     <p style="color:white;margin-top:10px;">软工课设——人脸识别——2019.05.19 </p>
   </div>

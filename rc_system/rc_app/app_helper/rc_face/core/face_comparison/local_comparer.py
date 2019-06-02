@@ -28,34 +28,25 @@ from collections import deque
 
 class LocalFaceComparer(object):
     """人脸比对类"""
-    def __init__(
-            self,
-            index: int,
-            unknown_encoding_face: ndarray,
-            known_encoding_faces: list
-    ):
+    def __init__(self, known_encoding_faces: list):
         """
-        :param index: 图片的编号(多线程运行时避免对比结果混淆)
-        :param unknown_encoding_face: 未知的(需要比对的)人脸
         :param known_encoding_faces: 已知的encoding后的人脸(人脸仓库)
         """
-        self._index = index
-        self._unknown_encoding_face = unknown_encoding_face
         self._known_encoding_faces = known_encoding_faces
 
-    def compare(self) -> list:
+    def compare(self, unknown_encoding_face: ndarray) -> list:
         """
         将一张未知的人脸图片与人脸仓库中的人脸(self._known_encoding_faces)对比
+        :param unknown_encoding_face: 未知的(需要比对的)人脸
         :return: 相似度从高到低排序的结果列表
         """
         result = deque()
         face_distances = face_recognition.face_distance(
             self._known_encoding_faces,
-            self._unknown_encoding_face
+            unknown_encoding_face
         )
         for index, face_distance in enumerate(face_distances):
             result.append({
-                'unknown_face_index': self._index,
                 'known_face_index': index,
                 'similarity': round(100*(1-face_distance), 4),
             })
