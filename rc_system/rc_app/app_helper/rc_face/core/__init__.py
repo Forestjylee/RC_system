@@ -13,8 +13,8 @@ Created by
                        __/ |   
                       |___/    
 """
-from .face_comparison import LocalFaceComparer
+from .face_comparison import compare_faces
 from .face_image_handler import FaceImageHandler
 
 
-__all__ = ['LocalFaceComparer', 'FaceImageHandler']
+__all__ = ['compare_faces', 'FaceImageHandler']

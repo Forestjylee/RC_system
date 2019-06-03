@@ -13,4 +13,4 @@ Created by
                        __/ |   
                       |___/    
 """
-from .local_comparer import LocalFaceComparer
+from .local_comparer import compare_faces

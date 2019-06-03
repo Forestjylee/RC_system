@@ -26,7 +26,7 @@ from numpy import ndarray
 from collections import deque
 
 
-def compare(known_encoding_faces: list, unknown_encoding_face: ndarray) -> list:
+def compare_faces(known_encoding_faces: list, unknown_encoding_face: ndarray) -> list:
     """
     将一张未知的人脸图片与人脸仓库中的人脸(self._known_encoding_faces)对比
     :param known_encoding_faces: 已知的人脸列表
