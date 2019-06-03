@@ -13,7 +13,7 @@ Created by
                        __/ |   
                       |___/    
 """
-from .core import FaceImageHandler, LocalFaceComparer
+from .core import FaceImageHandler, compare_faces
 
 
-__all__ = ['FaceImageHandler', 'LocalFaceComparer']
+__all__ = ['FaceImageHandler', 'compare_faces']

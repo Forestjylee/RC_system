@@ -10,12 +10,12 @@ import pickle
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 
 from ..models import User, Student, Course, StudentCourse, StudentPicture, StudentAbsentSituation
 from .io import read_excel_file, decompress_zip
 from .decorators import deal_exceptions
-from .rc_face import FaceImageHandler, LocalFaceComparer
+from .rc_face import FaceImageHandler, compare_faces
 
 
 def get_object_or_none(model, *args, **kwargs):
