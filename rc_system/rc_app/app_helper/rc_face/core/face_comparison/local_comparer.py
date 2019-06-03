@@ -26,28 +26,21 @@ from numpy import ndarray
 from collections import deque
 
 
-class LocalFaceComparer(object):
-    """人脸比对类"""
-    def __init__(self, known_encoding_faces: list):
-        """
-        :param known_encoding_faces: 已知的encoding后的人脸(人脸仓库)
-        """
-        self._known_encoding_faces = known_encoding_faces
-
-    def compare(self, unknown_encoding_face: ndarray) -> list:
-        """
-        将一张未知的人脸图片与人脸仓库中的人脸(self._known_encoding_faces)对比
-        :param unknown_encoding_face: 未知的(需要比对的)人脸
-        :return: 相似度从高到低排序的结果列表
-        """
-        result = deque()
-        face_distances = face_recognition.face_distance(
-            self._known_encoding_faces,
-            unknown_encoding_face
-        )
-        for index, face_distance in enumerate(face_distances):
-            result.append({
-                'known_face_index': index,
-                'similarity': round(100*(1-face_distance), 4),
-            })
-        return sorted(result, key=lambda x: x['similarity'], reverse=True)
+def compare(known_encoding_faces: list, unknown_encoding_face: ndarray) -> list:
+    """
+    将一张未知的人脸图片与人脸仓库中的人脸(self._known_encoding_faces)对比
+    :param known_encoding_faces: 已知的人脸列表
+    :param unknown_encoding_face: 未知的(需要比对的)人脸
+    :return: 相似度从高到低排序的结果列表
+    """
+    result = deque()
+    face_distances = face_recognition.face_distance(
+        known_encoding_faces,
+        unknown_encoding_face
+    )
+    for index, face_distance in enumerate(face_distances):
+        result.append({
+            'known_face_index': index,
+            'similarity': round(100*(1-face_distance), 4),
+        })
+    return sorted(result, key=lambda x: x['similarity'], reverse=True)

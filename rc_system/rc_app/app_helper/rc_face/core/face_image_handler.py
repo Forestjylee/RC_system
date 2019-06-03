@@ -24,6 +24,8 @@ from .face_detection import detect_faces
 
 class FaceImageHandler(object):
     """人脸图片操作类"""
+    __slots__ = ('_image_path', '_image_save_type', '_original_image', '_face_locations')
+
     def __init__(
             self,
             image_path: str,
