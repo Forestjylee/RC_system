@@ -76,7 +76,7 @@
                     {% for course in courses %}
                         <tr>
                             <td></td>
-                            <td>{{ course.name }}</td>
+                            <td><a style="color: #0c7ed9; text-decoration: underline" href = "{% url 'rc_app:管理课程中的学生' username course.course_id %}">{{ course.name }}</a></td>
                             <td>{{ course.student_amount }}</td>
                             <td>{{ course.course_time }}</td>
                             <td></td>
@@ -160,19 +160,12 @@
             },
             "columnDefs": [
                 {
-                "targets": 1,
-                "render": function (data, type, row, meta) {
-                    var str = "./Class_Member.html?id=" + data;
-                    return '<a style="color: #0c7ed9; text-decoration: underline" href = "' + str.toString() + '">' + data + '</a>';
-                }
-            },
-                {
                     "targets": 4,
                     "render": function ( data, type, row, meta ) {
                         //return '<select><option value="未批准">未批准</option><option value="已批准">已批准</option></select>'
                         return '<a href="javascript:updateOne('+data+')"><img src="{% static 'others/images/xiugai.jpg' %}" style=" width: 22px; height:22px;" data-toggle="modal" data-target="#myModal"></a>';
                     }
-                },
+            },
                 {
                     "orderable" : false,
                     "targets" : [0, 4],

@@ -26,7 +26,7 @@
     <nav class="navbar">
         <div class="col-sm-12" style="background: #0c7ed9">
             <div class="navbar-header">
-                <a href="index.html"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""
+                <a href="{% url 'rc_app:主页' username 0 %}"><img src="{% static 'others/images/logo.png' %}" class="logo" alt=""
                                           style="width: 240px; height: 100px;position: relative;left: 150px"></a>
             </div>
         </div>
@@ -34,10 +34,10 @@
             <div class="col-sm-12" style="background:#dcdcdc;">
                 <div class="collapse navbar-collapse" id="navbar-menu" style="position: relative; right: 150px">
                     <ul class="nav navbar-nav navbar-right" data-in="fadeIn" data-out="fadeOut">
-                        <li><a style="font-family:等线; font-size: 17px; color: black;">杨灿老师，欢迎登陆系统！</a></li>
-                        <li><a style="font-family:等线; font-size: 17px; color: black;" href="./face.html">人脸点名</a></li>
+                        <li><a style="font-family:等线; font-size: 17px; color: black;">{{ username }}老师，欢迎登陆系统！</a></li>
+                        <li><a style="font-family:等线; font-size: 17px; color: black;" href="{% url 'rc_app:主页' username 0 %}">人脸点名</a></li>
                         <li><a style="font-family:等线; font-size: 17px; color: black;" href="./Class_Info.html">管理学生</a></li>
-                        <li><a style="font-family:等线; font-size: 17px; color: black;" >登出</a></li>
+                        <li><a style="font-family:等线; font-size: 17px; color: black;" href="{% url 'rc_app:登出' %}">登出</a></li>
                     </ul>
                 </div>
             </div>
@@ -51,8 +51,8 @@
         <div class="headline">
             <div class="headline-text-info">
                 <p>缺勤记录</p>
-                <p style="font-size: 18px; color:black;" >姓名：</p>
-                <p id="studentID" style="font-size: 18px; color:black;">学号：</p>
+                <p style="font-size: 18px; color:black;" >姓名:&nbsp;{{ student.name }}</p>
+                <p id="studentID" style="font-size: 18px; color:black;">学号:&nbsp;{{ student.student_id }}</p>
             </div>
             <div class="left_selection_list" >
                 <button id="addOne" class="mybtn" style="background-color: #74abc6" onclick="createOne()">新增条目</button>
@@ -134,27 +134,6 @@
 </div>
 
 <script>
-    /*获取当前页面id*/
-    function GetRequest() {
-        var url = location.search; //获取url中"?"符后的字串
-        var theRequest = new Object();
-        if (url.indexOf("?") != -1) {
-            var str = url.substr(1);
-            strs = str.split("&");
-            for (var i = 0; i < strs.length; i++) {
-                theRequest[strs[i].split("=")[0]] = decodeURIComponent(strs[i].split("=")[1]);
-            }
-        }
-        return theRequest;
-    }
-
-    var a=GetRequest();
-
-    function passtoHTML() {
-        console.log(a['id']);
-        return "学号："+a['id'];
-    }
-    document.getElementById('studentID').innerText=passtoHTML();
 
 
     /* Initialise the table with the required column ordering data types */

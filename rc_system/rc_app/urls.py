@@ -20,10 +20,11 @@ urlpatterns = [
     path('login/', views.user_login, name='登录'),
     path('logout/', views.user_logout, name='登出'),
     path('home/<username>/<course_id>/', views.home_page, name='主页'),
-    path('specific_name_list/<username>', views.specific_name_list, name='详细名单'),
+    path('specific_name_list/<username>/', views.specific_name_list, name='详细名单'),
     path('manage_course/<username>/', views.manage_course, name='管理课程'),
     path('manage_course_student/<username>/<course_id>/', views.manage_course_student, name='管理课程中的学生'),
-    path('manage_student/<username>/', views.manage_student, name='管理学生')
+    path('manage_student/<username>/', views.manage_student, name='管理学生'),
+    path('absent_record/<username>/<student_id>/', views.absent_record, name='缺勤记录')
 ]
 
 handler404 = views.page_not_found

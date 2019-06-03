@@ -60,6 +60,21 @@ def get_courses_or_none(teacher: User) -> list:
     return courses if courses else []
 
 
+def get_students_or_none(course_id: int) -> list:
+    """
+
+    :param course_id:
+    :return:
+    """
+    students = []
+    course = get_object_or_404(Course, course_id=course_id)
+    student_courses = StudentCourse.objects.filter(course=course)
+    if student_courses:
+        for sc in student_courses:
+            students.append(sc.student)
+    return students
+
+
 def create_students(filepath: str, course: Course) -> bool:
     """
     从Excel表中读取并创建多个学生

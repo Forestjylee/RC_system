@@ -3,10 +3,11 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
 
-from .models import User
+from .models import User, Student
 from .app_helper.decorators import is_post_or_get
 from .app_helper.views_helper import (get_user_or_none,  save_upload_face_photo,
-                                      detect_and_compare_faces, get_courses_or_none)
+                                      detect_and_compare_faces, get_courses_or_none,
+                                      get_students_or_none)
 
 # Create your views here.
 
@@ -60,6 +61,7 @@ def home_page(request, username: str, course_id: str):
             else:
                 context['file_type'] = file_type
                 context['face_amount'] = face_amount
+                context['attendance_rate'] = round(face_amount / context['student_amount'], 4) * 100
     return render(request, 'face.html', context=context)
 
 
@@ -86,6 +88,8 @@ def manage_course_student(request, username: str, course_id: str):
     course_id = int(course_id)
     teacher = get_object_or_404(User, username=username)
     courses = get_courses_or_none(teacher=teacher)
+    students = get_students_or_none(course_id=course_id)
+    context['students'] = students
     for course in courses:
         if course.course_id == course_id:
             context['course'] = course
@@ -96,6 +100,15 @@ def manage_course_student(request, username: str, course_id: str):
 def manage_student(request, username: str):
     """管理学生"""
     return render(request, 'manage_student.html', {'username': username})
+
+
+@login_required
+def absent_record(request, username: str, student_id: str):
+    """缺勤记录"""
+    context = {'username': username}
+    student = get_object_or_404(Student, student_id=student_id)
+    context['student'] = student
+    return render(request, 'Absent_Record.html', context=context)
 
 
 def page_not_found(request, exception: Exception=None):

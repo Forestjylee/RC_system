@@ -51,8 +51,8 @@
         <div class="headline" >
             <div class="headline-text-info">
             <p id="headline_Class_Member">{{ course.name }}</p>
-            <p style="font-size: 18px; color:black;" >{{ course.course_time }}</p>
-            <p style="font-size: 18px; color:black;">{{ course.student_amount }}</p>
+            <p style="font-size: 18px; color:black;" >上课时间:&nbsp;{{ course.course_time }}</p>
+            <p style="font-size: 18px; color:black;">总人数:&nbsp;{{ course.student_amount }}人</p>
             </div>
             <div class="left_selection_list" >
                 <button id="addOne" class="mybtn" style="background-color: #74abc6" onclick="createOne()">新增条目</button>
@@ -80,26 +80,10 @@
                             <td>{{ student.student_id }}</td>
                             <td>{{ student.name }}</td>
                             <td>8</td>
-                            <td>{{ student.absent_times }}</td>
+                            <td><a style="color: #0c7ed9; text-decoration: underline" href = "{% url 'rc_app:缺勤记录' username student.student_id %}">{{ student.absent_times }}</a></td>
                             <td></td>
                         </tr>
                     {% endfor %}
-                <tr>
-                    <td></td>
-                    <td>201630612345</td>
-                    <td>王大明</td>
-                    <td>8</td>
-                    <td>1</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>201630654321</td>
-                    <td>王小明</td>
-                    <td>6</td>
-                    <td>2</td>
-                    <td></td>
-                </tr>
                 </tbody>
             </table>
         </div>
@@ -182,13 +166,6 @@
             },},
             "order": [[ 4, "desc" ]],
             "columnDefs": [
-                {
-                    "targets": 4,
-                    "render": function (data, type, row, meta) {
-                        var str = "./Absent_Record.html?id="+row["studentID"];
-                        return '<a style="color: #0c7ed9; text-decoration: underline" href = "' + str.toString() + '">' + data + '</a>';
-                    }
-                },
                 {
                     "targets": 5,
                     "render": function ( data, type, row, meta ) {
