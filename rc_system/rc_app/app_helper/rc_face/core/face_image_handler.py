@@ -47,20 +47,6 @@ class FaceImageHandler(object):
         """
         return len(self._face_locations)
 
-    def encoding_face(self) -> ndarray:
-        """
-        已知图片中只有一张人脸的情况下使用
-        encoding那张人脸
-        若人脸数量大于1则抛出ValueError异常
-        :return: 编码后的人脸
-        """
-        if len(self._face_locations) != 1:
-            raise ValueError("人脸数量大于1")
-        return face_encodings(
-            face_image=self._original_image,
-            known_face_locations=self._face_locations
-        )[0]
-
     def encoding_faces(self) -> list:
         """
         已知图片中有多张人脸的情况下使用
@@ -149,6 +135,7 @@ class FaceImageHandler(object):
 
     @staticmethod
     def _show_image(image, image_name: str="Photo") -> None:
+
         """
         弹窗展示图片
         :param image: 图片对象
@@ -160,3 +147,21 @@ class FaceImageHandler(object):
         cv2.imshow(image_name, image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+
+    @classmethod
+    def encoding_face(cls, image_path: str) -> ndarray:
+        """
+        已知图片中只有一张人脸的情况下使用
+        encoding那张人脸
+        若人脸数量大于1则抛出ValueError异常
+        :return: 编码后的人脸
+        """
+        try:
+            image = cv2.imread(image_path)
+        except TypeError:
+            raise TypeError("非法图片格式")
+        face_locations = detect_faces(image)
+        return face_encodings(
+            face_image=image,
+            known_face_locations=face_locations
+        )[0]
