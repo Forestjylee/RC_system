@@ -23,7 +23,7 @@ def user_login(request):
     user = get_user_or_none(request)
     if user is not None:
         login(request, user)
-        return redirect('rc_app:主页', username=user.username, course_id=0)
+        return redirect('rc_app:主页', username=user.username, course_index=0)
     else:
         return render(request, 'login.html', {'error': '用户名或密码错误'})
 
@@ -35,22 +35,19 @@ def user_logout(request):
 
 
 @login_required
-def home_page(request, username: str, course_id: str):
+def home_page(request, username: str, course_index: str):
     """主页"""
     context = {}
-    course_id = int(course_id)
+    course_index = int(course_index)
     teacher = get_object_or_404(User, username=username)
     courses = get_courses_or_none(teacher=teacher)
     context['username'] = username
     context['courses'] = courses
-    context['course_id'] = course_id
-    if course_id:
-        for course in courses:
-            if course.course_id == course_id:
-                context['student_amount'] = course.student_amount
-                break
-    elif courses:
-        return redirect('rc_app:主页', username=username, course_id=courses[0].course_id)
+    context['index'] = course_index
+    if courses:
+        if course_index >= len(courses):
+            return render_to_response('404.html')
+        context['student_amount'] = courses[course_index].student_amount
     if request.method == 'POST':
         file_obj = request.FILES.get('face_photo')
         filepath, result = save_upload_face_photo(file_obj, username)

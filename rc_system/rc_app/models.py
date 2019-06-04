@@ -11,6 +11,7 @@ class Student(models.Model):
     student_id = models.CharField(verbose_name="学号", max_length=30)
     name = models.CharField(verbose_name="姓名", max_length=30)
     class_name = models.CharField(verbose_name="班级", max_length=30)
+    attendance_times = models.IntegerField(verbose_name="出勤次数", default=0)
     absent_times = models.IntegerField(verbose_name="缺勤次数", default=0)
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     last_updated_time = models.DateTimeField(auto_now=True, verbose_name="最后修改时间")
@@ -21,7 +22,7 @@ class Student(models.Model):
     class Meta:
         verbose_name_plural = '学生信息'                 # 在管理界面中表的名字
         db_table = 'Student'                            # 在MySQL中表的名字
-        ordering = ['class_name', 'last_updated_time']
+        ordering = ['class_name', 'absent_times', 'attendance_times']
 
 
 class Course(models.Model):

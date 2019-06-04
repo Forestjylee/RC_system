@@ -77,7 +77,7 @@
                 <div>
                     <select id="cse" style="font-size: 36px; width: 300px; color: #0c7ed9" onchange="window.location.href=this.value">
                         {% for course in courses %}
-                            <option id="{{ course.course_id }}" value="{% url 'rc_app:主页' username course.course_id %}">{{ course.name }}</option>
+                            <option id="{{ course.index }}" value="{% url 'rc_app:主页' username course.index %}">{{ course.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -108,14 +108,20 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>201630601111</td>
-                        <td>王小明</td>
-                    </tr>
-                    <tr>
-                        <td>201630601111</td>
-                        <td>王小明</td>
-                    </tr>
+                        {% for student in students %}
+                            <tr>
+                                <td>{{ student.student_id }}</td>
+                                <td>{{ student.name }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>201630601111</td>
+                            <td>王小明</td>
+                        </tr>
+                        <tr>
+                            <td>201630601111</td>
+                            <td>王小明</td>
+                        </tr>
                     </tbody>
                 </table>
                 </div>
@@ -160,7 +166,7 @@ $(document).ready(function() {
 } );
 
 
-document.getElementById("cse")[{{ course_id }}-1].selected=true;
+document.getElementById("cse")[{{ index }}].selected=true;
 
 </script>
 </body>

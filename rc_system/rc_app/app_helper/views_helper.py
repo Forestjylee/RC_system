@@ -57,6 +57,8 @@ def get_courses_or_none(teacher: User) -> list:
     :return: 所有老师管理的课程
     """
     courses = Course.objects.filter(teacher=teacher)
+    for index, course in enumerate(courses):
+        course.index = index
     return courses if courses else []
 
 

@@ -34,7 +34,7 @@
                     <ul class="nav navbar-nav navbar-right" data-in="fadeIn" data-out="fadeOut">
                         <li><a style="font-family:等线; font-size: 17px">{{ username }}老师，欢迎登陆系统！</a></li>
                         <li><a style="font-family:等线; font-size: 17px" href="{% url 'rc_app:主页' username 0 %}">人脸点名</a></li>
-                        <li><a style="font-family:等线; font-size: 17px" href="./Class_Info.html">管理学生</a></li>
+                        <li><a style="font-family:等线; font-size: 17px" href="{% url 'rc_app:管理课程' username %}">个人中心</a></li>
                         <li><a style="font-family:等线; font-size: 17px" href="{% url 'rc_app:登出' %}">登出</a></li>
                     </ul>
                 </div>
