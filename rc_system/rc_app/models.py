@@ -11,8 +11,6 @@ class Student(models.Model):
     student_id = models.CharField(verbose_name="学号", max_length=30)
     name = models.CharField(verbose_name="姓名", max_length=30)
     class_name = models.CharField(verbose_name="班级", max_length=30)
-    attendance_times = models.IntegerField(verbose_name="出勤次数", default=0)
-    absent_times = models.IntegerField(verbose_name="缺勤次数", default=0)
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     last_updated_time = models.DateTimeField(auto_now=True, verbose_name="最后修改时间")
 
@@ -22,7 +20,7 @@ class Student(models.Model):
     class Meta:
         verbose_name_plural = '学生信息'                 # 在管理界面中表的名字
         db_table = 'Student'                            # 在MySQL中表的名字
-        ordering = ['class_name', 'absent_times', 'attendance_times']
+        ordering = ['class_name']
 
 
 class Course(models.Model):
@@ -59,6 +57,8 @@ class StudentCourse(models.Model):
     """学生课程对应关系"""
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="学生")
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="课程")
+    attendance_times = models.IntegerField(verbose_name="出勤次数", default=0)
+    absent_times = models.IntegerField(verbose_name="缺勤次数", default=0)
 
     def __str__(self):
         return f"{self.student.name}-{self.course.name}"
@@ -66,7 +66,7 @@ class StudentCourse(models.Model):
     class Meta:
         verbose_name_plural = '学生课程对应关系'
         db_table = 'StudentCourse'
-        ordering = ['course']
+        ordering = ['course', 'absent_times']
 
 
 class StudentAbsentSituation(models.Model):

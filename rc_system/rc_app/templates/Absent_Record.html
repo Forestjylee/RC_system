@@ -182,7 +182,7 @@
                 "targets": 3,
                 "render": function ( data, type, row, meta ) {
                     //return '<select><option value="未批准">未批准</option><option value="已批准">已批准</option></select>'
-                    return '<a href="javascript:updateOne('+data+')"><img src="images/xiugai.jpg" style=" width: 22px; height:22px;" data-toggle="modal" data-target="#myModal"></a>';
+                    return '<a href="javascript:updateOne('+data+')"><img src="{% static 'others/images/xiugai.jpg' %}" style=" width: 22px; height:22px;" data-toggle="modal" data-target="#myModal"></a>';
                 }
                 },
 

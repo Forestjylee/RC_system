@@ -52,7 +52,6 @@ def get_user_or_none(request):
 def get_courses_or_none(teacher: User) -> list:
     """
     根据老师对象查询老师管理的课程
-    :param request:
     :param teacher: 老师对象
     :return: 所有老师管理的课程
     """
@@ -64,9 +63,9 @@ def get_courses_or_none(teacher: User) -> list:
 
 def get_students_or_none(course_id: int) -> list:
     """
-
-    :param course_id:
-    :return:
+    根据课程id获取选择了这门课程的学生
+    :param course_id: 课程id
+    :return: 选择了这门课程的学生的列表
     """
     students = []
     course = get_object_or_404(Course, course_id=course_id)
@@ -159,6 +158,24 @@ def create_student_absent_situation(student: Student, course: Course, absent_or_
     sas.save()
 
 
+# @deal_exceptions(return_when_exceptions=False)
+def update_student_course(student: Student, course: Course, is_absent: bool) -> bool:
+    """
+    更新学生的出勤、缺勤次数信息
+    :param student: 学生对象
+    :param course: 课程对象
+    :param is_absent: 是否缺席
+    :return: 是否更新成功
+    """
+    sc = get_object_or_404(StudentCourse, student=student, course=course)
+    if is_absent:
+        sc.absent_times += 1
+    else:
+        sc.attendance_times += 1
+    sc.save()
+    return True
+
+
 @deal_exceptions(return_when_exceptions=(None, None))
 def detect_and_compare_faces(username: str, filepath: str) -> bool:
     """
@@ -170,10 +187,10 @@ def detect_and_compare_faces(username: str, filepath: str) -> bool:
     face_handler = FaceImageHandler(image_path=filepath)
     face_amount = face_handler.get_face_amount()
     file_type = face_handler._image_save_type
-    encoding_faces_in_pictures = face_handler.encoding_faces()
     face_handler.save_marked_image(
             filepath=_get_marked_photo_filepath(username, file_type=file_type)
     )
+    unknwon_encoding_faces = face_handler.encoding_faces()
     return file_type, face_amount
     #TODO 人脸比对
 
@@ -194,23 +211,34 @@ def save_student_infos(file_obj, username: str) -> tuple:
     return filepath, _save_upload_file(file_obj, filepath)
 
 
-def save_student_face_photos(file_obj, username: str) -> bool:
+def save_compressed_upload_student_face_photos(file_obj, username: str) -> bool:
     """
-    1、将上传的包含多个学生照片的压缩包解压
+    1、将上传的包含多个学生照片的压缩包保存到upload/username/目录下
+    2、解压到upload/username/temp_student_photos/目录下
     :param file_obj: 文件对象
     :param username: 老师用户名
     :return: 是否保存成功
     """
-    target_directory = os.path.join(os.path.join(settings.BASE_DIR, 'upload'), username)
+    target_directory = os.path.join(_get_user_upload_file_directory(username), 'temp_student_photos')
     file_directory = _get_user_upload_file_directory(username)
     file_type = os.path.splitext(file_obj.name)[-1]
+    if file_type != '.zip':
+        return False
     filename = f"{str(datetime.now())}{file_type}"
     filepath = os.path.join(file_directory, filename)
-    if file_type == '.zip':
-        return False
+    _save_upload_file(file_obj, filepath)
     if decompress_zip(filepath, target_directory=target_directory):
         pass
-    return False
+    return True
+
+
+def save_student_face_photos(username: str):
+    """
+
+    :param username:
+    :return:
+    """
+    pass
 
 
 def save_student_face_photo(file_obj, student_id: str, student_name: str) -> dict:
@@ -231,7 +259,7 @@ def save_student_face_photo(file_obj, student_id: str, student_name: str) -> dic
     filepath = os.path.join(file_directory, filename)
     result = _save_upload_file(file_obj, filepath)
     if result:
-        encoding_face = FaceImageHandler(image_path=filepath).encoding_face()
+        encoding_face = FaceImageHandler.encoding_face(image_path=filepath)
         if encoding_face:
             student = get_object_or_none(Student, student_id=student_id, name=student_name)
             if student:

@@ -18,15 +18,14 @@ admin.register(User, UserAdmin)
 class StudentAdmin(admin.ModelAdmin):
 
     # 自定义管理界面
-    list_display = ['id', 'student_id', 'name', 'class_name', 'attendance_times',
-                    'absent_times', 'create_time', 'last_updated_time']
+    list_display = ['id', 'student_id', 'name', 'class_name',
+                    'create_time', 'last_updated_time']
     list_filter = ['class_name']
     search_fields = ['name', 'class_name']
     list_per_page = 20
 
     fieldsets = [
         ("学生信息", {"fields": ['student_id', 'name', 'class_name']}),
-        ("出、缺勤情况", {"fields": ['attendance_times', 'absent_times']})
     ]
 
 
@@ -49,13 +48,14 @@ class CourseAdmin(admin.ModelAdmin):
 @admin.register(StudentCourse)
 class StudentCourseAdmin(admin.ModelAdmin):
 
-    list_display = ['course', 'student']
+    list_display = ['course', 'student', 'attendance_times', 'absent_times']
     list_filter = ['course']
     search_fields = ['course']
     list_per_page = 20
 
     fieldsets = [
         ("学生课程对应情况", {"fields": ['course', 'student']}),
+        ("出、缺勤情况", {"fields": ['attendance_times', 'absent_times']})
     ]
 
 
