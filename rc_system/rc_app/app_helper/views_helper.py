@@ -7,6 +7,7 @@ Created by Junyi
 """
 import os
 import pickle
+import shutil
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -176,6 +177,33 @@ def update_student_course(student: Student, course: Course, is_absent: bool) -> 
     return True
 
 
+def save_student_face_photos(username: str):
+    """
+    将临时存放学生相片的文件夹中的图片保存到数据库中
+    :param username: 老师用户名
+    :return: 是否保存成功
+    """
+    file_directory = _get_user_upload_file_directory(username)
+    source_directory = os.path.join(file_directory, 'temp_student_photos')
+    file_names = os.listdir(source_directory)
+    for file_name in file_names:
+        student_id, student_name = _get_student_id_and_name(file_name)
+        temp_file_path = os.path.join(source_directory, file_name)
+        encoding_face = FaceImageHandler.encoding_face(image_path=temp_file_path)
+        if encoding_face:
+            file_path = os.path.join(file_directory, file_name)
+            shutil.copy(temp_file_path, file_path)
+            student = get_object_or_none(Student, student_id=student_id, name=student_name)
+            if student:
+                sp = get_object_or_none(StudentPicture, student=student)
+                if not sp:
+                    sp = StudentPicture()
+                    sp.student = student
+                sp.face_picture_path = file_path
+                sp.encoding_face = pickle.dumps(encoding_face)
+                sp.save()
+
+
 @deal_exceptions(return_when_exceptions=(None, None))
 def detect_and_compare_faces(username: str, filepath: str) -> bool:
     """
@@ -228,19 +256,12 @@ def save_compressed_upload_student_face_photos(file_obj, username: str) -> bool:
     filepath = os.path.join(file_directory, filename)
     _save_upload_file(file_obj, filepath)
     if decompress_zip(filepath, target_directory=target_directory):
-        pass
-    return True
+        return True
+    else:
+        return False
 
 
-def save_student_face_photos(username: str):
-    """
-
-    :param username:
-    :return:
-    """
-    pass
-
-
+# noinspection PyTypeChecker
 def save_student_face_photo(file_obj, student_id: str, student_name: str) -> dict:
     """
     1、保存上传的单张学生人脸图片
@@ -333,3 +354,16 @@ def _get_marked_photo_filepath(username: str, file_type) -> str:
     file_directory = os.path.join(os.path.join(settings.BASE_DIR, 'media'), username)
     os.makedirs(file_directory, exist_ok=True)
     return os.path.join(file_directory, f"marked_face.{file_type}")
+
+
+@deal_exceptions(return_when_exceptions=None)
+def _get_student_id_and_name(file_name: str) -> tuple:
+    """
+    从学生的照片命名中获取学生的学号和姓名
+    照片命名格式：20163060xxxx_李某.png
+    :param file_name: 文件名
+    :return: 学生的id和姓名
+    """
+    file_name = os.path.splitext(file_name)[0]
+    student_id, name = file_name.split('_')
+    return student_id, name

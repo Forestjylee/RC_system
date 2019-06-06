@@ -159,7 +159,8 @@ class FaceImageHandler(object):
         try:
             image = cv2.imread(image_path)
         except TypeError:
-            raise TypeError("非法图片格式")
+            # raise TypeError("非法图片格式")
+            return None
         face_locations = detect_faces(image)
         return face_encodings(
             face_image=image,

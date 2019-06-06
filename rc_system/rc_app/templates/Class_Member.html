@@ -62,6 +62,21 @@
         </div>
         <hr>
         <div class="wrap" >
+            <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="student_photo" class="f1" style="opacity:0;pointer-events: none;"/>
+                    <button class="upload1" type="submit" style="display: none"></button>
+            </form>
+            <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="students_excel_file" class="f2" style="opacity:0;pointer-events: none;"/>
+                    <button class="upload2" type="submit" style="display: none"></button>
+            </form>
+            <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="text" name="delete_student_ids" class="f3" style="opacity:0;pointer-events: none;"/>
+                    <button class="upload3" type="submit" style="display: none"></button>
+            </form>
             <table id="specific_info" class="display" >
                 <thead>
                     <tr>
@@ -111,7 +126,7 @@
             <div class="modal-body" style="">
                 姓名: <input type="text" name="StudentName" value=""><br></div>
             <div class="modal-body" style="">
-                照片：<img src="images/"><button>立即上传</button><br></div>
+                照片：<img src="images/"><button onclick="s1()">立即上传</button><br></div>
             <div class="modal-body" style="">
                 出勤和缺勤次数将通过缺勤记录由系统进行统计，详情请点击缺勤次数<br></div>
             <div class="modal-footer">
@@ -146,12 +161,12 @@
             </div>
             <div class="modal-body" style="">
                 <br>
-                <img src="images/">
+                <img style="left: 30%" src="{% static 'others/images/student_info_template.png' %}">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭
                 </button>
-                <button type="button" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" onclick="s2()">
                     我已知悉并继续<!-- 计划：上传文件包 -->
                 </button>
             </div>
@@ -162,6 +177,34 @@
 
 
 <script>
+function s1(){
+    $(".f1").click();
+}
+
+function s2(){
+    $(".f2").click();
+}
+
+function s3(){
+    {#$(".f3").click();#}
+    //TODO 将拼接好的学号字符串赋值给f3
+}
+
+$('.f1').change(function() {
+    // $('#em').text($('.f').val());
+    $(".upload1").click();
+})
+
+$('.f2').change(function() {
+    // $('#em').text($('.f').val());
+    $(".upload2").click();
+})
+
+$('.f3').change(function() {
+    // $('#em').text($('.f').val());
+    $(".upload3").click();
+})
+
 
     /* Initialise the table with the required column ordering data types */
     $(document).ready(function() {
@@ -234,10 +277,8 @@
         }
         var output;
         var r=confirm("确定删除所选项吗?");
-        if (r==true) output=1;
-        else output=0;
-        if ( output== 1 ) {
-            myTable_CM.rows('.selected').remove().draw(false);
+        if (r===true){
+            s3();
         }
         return;
     }
