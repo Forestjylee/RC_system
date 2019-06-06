@@ -51,8 +51,6 @@
         <div class="headline">
             <div class="headline-text-info">
                 <p>我的课程</p>
-<!--                <p style="font-size: 18px; color:black;" >任课教师：杨灿</p>-->
-<!--                <p id="studentID" style="font-size: 18px; color:black;">帐号：</p>-->
             </div>
             <div class="left_selection_list" >
                 <button id="addOne" class="mybtn" style="background-color: #74abc6" onclick="createOne()">新增条目</button>
@@ -165,7 +163,7 @@
                         //return '<select><option value="未批准">未批准</option><option value="已批准">已批准</option></select>'
                         return '<a href="javascript:updateOne('+data+')"><img src="{% static 'others/images/xiugai.jpg' %}" style=" width: 22px; height:22px;" data-toggle="modal" data-target="#myModal"></a>';
                     }
-            },
+                },
                 {
                     "orderable" : false,
                     "targets" : [0, 4],
@@ -181,7 +179,7 @@
     } );
 
     function deleteAll() {
-        var array = myTable_CI.row('.selected').data();
+        var array = myTable_CI.row('.selected');
         if (array == null)
         {
             alert("尚未有被选中的项！");

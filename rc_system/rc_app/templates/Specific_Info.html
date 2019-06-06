@@ -13,6 +13,12 @@
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.0/js/dataTables.select.min.js"></script>
+    <link rel="stylesheet" type="text/css" src="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
 </head>
 
 
@@ -45,32 +51,49 @@
 
 <div class="mainframe-content">
     <div class="mainframe-wrap" onload="change_color()">
-        <div class="headline-noinfo">
+        <div class="headline">
+        <div class="headline-text-info">
             <p>名单详情</p>
+            <p style="font-size: 18px; color:black;" >课程：16级-网络工程</p>
+            <p id="studentID" style="font-size: 18px; color:black;">时间：[1-11周]周五下午1、2节</p>
         </div>
+        <div class="left_selection_list" >
+            <button id="addAll" class="mybtn" style="background-color: #8cc66a" onclick="greenChange()">修改为已到场</button>
+            <button id="deleteAll" class="mybtn" style="background-color: #c64d47" onclick="redChange()">修改为未到场</button>
+        </div>
+    </div>
         <hr>
         <div class="wrap" >
             <table id="specific_info" class="display">
                 <thead>
+                <!--以下全改！！！2019.6.5修改-->
                 <tr>
-                    <th style="text-align: center">学号</th>
-                    <th style="text-align: center">姓名</th>
-                    <th style="text-align: center">缺勤次数</th>
-                    <th style="text-align: center">到场情况</th>
+                    <th style="text-align: center; width: 15%"><input type="checkbox" id="allChecked" /></th>
+                    <th style="text-align: center; width: 20%">学号</th>
+                    <th style="text-align: center; width: 20%">姓名</th>
+                    <th style="text-align: center; width: 15%">出勤次数</th>
+                    <th style="text-align: center; width: 15%">到场情况</th>
+                    <th style="text-align: center; width: 15%;" data-toggle="tooltip" data-placement="bottom"
+                        title="未到场时：置信度=1-学生曾经到场次数/总开课次数；
+                        已到场时：置信度=学生照片在人脸比对中的置信因子">置信度</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
+                    <td></td>
                     <td>201630601221</td>
                     <td>王大明</td>
-                    <td class="last_time">18</td>
+                    <td>18</td>
                     <td>未到场</td>
+                    <td>60%</td>
                 </tr>
                 <tr>
+                    <td></td>
                     <td>201630601111</td>
                     <td>王小明</td>
-                    <td class="last_time">24</td>
+                    <td>24</td>
                     <td>到场</td>
+                    <td>50%</td>
                 </tr>
                 </tbody>
             </table>
@@ -82,12 +105,18 @@
 <script>
     /* Initialise the table with the required column ordering data types */
     $(document).ready(function() {
-        $('#specific_info').DataTable( {
+        myTable_SI = $('#specific_info').DataTable( {
             "columns": [
-                null,
-                null,
-                null,
-                null,
+                {
+                    data: null,
+                    defaultContent: '',
+                    className: 'select-checkbox',
+                },
+                { data: "student_number"},
+                { data: "student_name"},
+                { data: "time"},
+                { data: "check"},
+                { data: "trust"},
             ],
             language: {
                 "sProcessing": "处理中...",
@@ -113,18 +142,47 @@
                     "sSortDescending": ": 以降序排列此列"
                 }
             },
-            "order": [[ 3, "desc" ]],
+            "order": [[ 4, "desc" ]],
             "createdRow": function( row, data, index ) {
                 //改行满足的条件
-                if(data[3]=='未到场'){
+                if(data["check"]=='未到场'){
                     //设置满足条件行的背景颜色
                     //$(row).css("background", "green");
                     //设置满足条件行的字体颜色
                     $(row).css("color", "red");
                 }
             },
+            "columnDefs": [
+                {
+                    "orderable" : false,
+                    "targets" : 0,
+                }
+            ],
+
+            select:{
+                style: 'multi',
+                selector: 'td:first-child'
+            }
         } );
     } );
+
+    $('#allChecked').click(function(){
+        if(this.checked){
+            myTable_SI.rows().select();
+        }else{
+            myTable_SI.rows().deselect();
+        }
+    });
+
+    function greenChange() {
+
+    }
+
+    function redChange() {
+
+    }
+
+    $(function () { $("[data-toggle='tooltip']").tooltip(); });
 
 </script>
 

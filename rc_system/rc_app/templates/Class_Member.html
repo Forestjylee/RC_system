@@ -56,31 +56,33 @@
             </div>
             <div class="left_selection_list" >
                 <button id="addOne" class="mybtn" style="background-color: #74abc6" onclick="createOne()">新增条目</button>
-                <button id="addAll" class="mybtn" style="background-color: #8cc66a">批量导入条目</button>
+                <button id="addAll" class="mybtn" style="background-color: #8cc66a" onclick="uploadAll()">批量导入条目</button>
                 <button id="deleteAll" class="mybtn" style="background-color: #c64d47" onclick="deleteAll()">批量删除</button>
             </div>
         </div>
         <hr>
         <div class="wrap" >
-            <table id="specific_info" >
+            <table id="specific_info" class="display" >
                 <thead>
-                <tr>
-                    <th style="text-align: center; width: 10%"><input type="checkbox" id="allChecked" /></th>
-                    <th style="text-align: center; width: 20%">学号</th>
-                    <th style="text-align: center; width: 20%">姓名</th>
-                    <th style="text-align: center; width: 15%">出勤次数</th>
-                    <th style="text-align: center; width: 15%">缺勤次数</th>
-                    <th style="text-align: center; width: 20%">操作</th>
-                </tr>
+                    <tr>
+                        <th style="text-align: center; width: 10%"><input type="checkbox" id="allChecked" /></th>
+                        <th style="text-align: center; width: 20%">学号</th>
+                        <th style="text-align: center; width: 20%">姓名</th>
+                        <th style="text-align: center; width: 10%">出勤次数</th>
+                        <th style="text-align: center; width: 10%">缺勤次数</th>
+                        <th style="text-align: center; width: 20%">是否上传有效照片</th>
+                        <th style="text-align: center; width: 10%">操作</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for student in students %}
                         <tr>
                             <td></td>
-                            <td>{{ student.student_id }}</td>
+                            <td><a style="color: #0c7ed9; text-decoration: underline" href = "{% url 'rc_app:缺勤记录' username student.student_id %}">{{ student.student_id }}</a></td>
                             <td>{{ student.name }}</td>
-                            <td>8</td>
-                            <td><a style="color: #0c7ed9; text-decoration: underline" href = "{% url 'rc_app:缺勤记录' username student.student_id %}">{{ student.absent_times }}</a></td>
+                            <td>{{ student.attendance_times }}</td>
+                            <td>{{ student.absent_times }}</td>
+                            <td>已上传，但无效照片</td>
                             <td></td>
                         </tr>
                     {% endfor %}
@@ -122,6 +124,42 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
+
+
+<!--修改3:-Start-->
+<div class="modal fade" id="myAllModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index: 9999">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" >
+                    使用说明
+                </h4>
+            </div>
+            <div class="modal-body" style="">
+                <br>
+                使用说明：<br>
+                批量导入文件需上传包含学生信息的Excel文件，以及以学生“学号_姓名”命名的.jpg或.png格式照片。<br>
+                学生信息暂只支持Excel文件，格式按照使用“华南理工大学（教务处）”打印的学生名单，例如:<br>
+            </div>
+            <div class="modal-body" style="">
+                <br>
+                <img src="images/">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+                <button type="button" class="btn btn-primary">
+                    我已知悉并继续<!-- 计划：上传文件包 -->
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--修改3-END-->
+
 
 <script>
 
@@ -167,7 +205,7 @@
             "order": [[ 4, "desc" ]],
             "columnDefs": [
                 {
-                    "targets": 5,
+                    "targets": 6,
                     "render": function ( data, type, row, meta ) {
                         //return '<select><option value="未批准">未批准</option><option value="已批准">已批准</option></select>'
                         return '<a href="javascript:updateOne('+data+')"><img src="{% static 'others/images/xiugai.jpg' %}" style=" width: 22px; height:22px;" data-toggle="modal" data-target="#myModal"></a>';
@@ -176,7 +214,7 @@
 
                 {
                     "orderable" : false,
-                    "targets" : [0, 5],
+                    "targets" : [0, 6],
                 },
 
             ],
@@ -188,7 +226,7 @@
     } );
 
     function deleteAll() {
-        var array = myTable_CM.row('.selected').data();
+        var array = myTable_CM.row('.selected');
         if (array == null)
         {
             alert("尚未有被选中的项！");
@@ -215,6 +253,13 @@
         $('#myModal').find('.modal-title').text("新建条目");
         $('#myModal').modal();
     }
+
+    //修改4
+    function uploadAll() {
+        $('#myAllModal').modal();
+    }
+
+
 
 
     $('#allChecked').click(function(){

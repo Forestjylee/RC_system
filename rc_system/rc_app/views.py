@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
 
-from .models import User, Student
+from .models import User, Student, StudentCourse
 from .app_helper.decorators import is_post_or_get
 from .app_helper.views_helper import (get_user_or_none,  save_upload_face_photo,
                                       detect_and_compare_faces, get_courses_or_none,
@@ -90,6 +90,10 @@ def manage_course_student(request, username: str, course_id: str):
     for course in courses:
         if course.course_id == course_id:
             context['course'] = course
+    for student in students:
+        sc = get_object_or_404(StudentCourse, student=student, course=course)
+        student.attendance_times = sc.attendance_times
+        student.absent_times = sc.absent_times
     return render(request, 'Class_Member.html', context=context)
 
 

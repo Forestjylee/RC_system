@@ -202,7 +202,7 @@
 
 
     function deleteAll() {
-        var array = myTable_AR.row('.selected').data();
+        var array = myTable_AR.row('.selected');
         if (array == null)
         {
             alert("尚未有被选中的项！");

@@ -65,6 +65,13 @@
                         background-size: cover; width: 268px; height: 110px; border-color: #2e6da4;
                         border-style: solid; border-width: 3px; border-radius: 15px";>
                         </button>
+                        <div class="progress progress-striped active" id="progress_bar" style="visibility: hidden">
+                            <div class="progress-bar progress-bar-info" role="progressbar" id="fucking_bar"
+                             aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                             style="width: 0%;">
+                                <p id="progress_text" style="color: #2e6da4; padding: 1px; margin: 0px 0px 0px 5px; left: 0px; position: absolute">正在上传(0%)</p>
+                            </div>
+                        </div>
                     </div>
                 {% endif %}
             </div>
@@ -141,12 +148,33 @@
 
 <script>
 function s(){
-$(".f").click();
+    $(".f").click();
 }
+
+var tik_tok = 0;
+
+//2019.6.5修改
+var timer;
+
 $('.f').change(function(){
-    $('#em').text($('.f').val());
+    // $('#em').text($('.f').val());
     $(".upload").click();
+    document.getElementsByClassName("progress-bar progress-bar-info")[0].style="width: 0%; color: #2e6da4";
+    console.log(document.getElementsByClassName("progress-bar progress-bar-info"));
+    document.getElementById("progress_text").innerText="正在上传(0%)";
+    document.getElementById("progress_bar").style.visibility= "visible";
+
+    timer = setInterval("timeTask()",130);
+    setTimeout("clearInterval(timer)", 12870);
 });
+
+function timeTask()
+{
+    tik_tok += 1;
+    document.getElementsByClassName("progress-bar progress-bar-info")[0].style="width: "+tik_tok+"%;";
+    if(tik_tok == 35) document.getElementById("progress_text").style.color="white";
+    document.getElementById("progress_text").innerText="正在上传("+tik_tok.toString()+"%)";
+}
 
 
 /* Initialise the table with the required column ordering data types */

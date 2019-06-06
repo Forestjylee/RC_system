@@ -224,7 +224,7 @@ def save_compressed_upload_student_face_photos(file_obj, username: str) -> bool:
     file_type = os.path.splitext(file_obj.name)[-1]
     if file_type != '.zip':
         return False
-    filename = f"{str(datetime.now())}{file_type}"
+    filename = f"{str(datetime.now())}.zip"
     filepath = os.path.join(file_directory, filename)
     _save_upload_file(file_obj, filepath)
     if decompress_zip(filepath, target_directory=target_directory):
