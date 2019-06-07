@@ -52,6 +52,10 @@ class StudentPicture(models.Model):
     def __str__(self):
         return f"{self.student}-{self.create_time}"
 
+    class Meta:
+        verbose_name_plural = '学生照片'
+        db_table = 'StudentPicture'
+
 
 class StudentCourse(models.Model):
     """学生课程对应关系"""

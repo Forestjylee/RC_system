@@ -3,11 +3,14 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
 
-from .models import User, Student, StudentCourse
+from .models import User, Student, StudentCourse, StudentPicture, StudentAbsentSituation
 from .app_helper.decorators import is_post_or_get
 from .app_helper.views_helper import (get_user_or_none,  save_upload_face_photo,
                                       detect_and_compare_faces, get_courses_or_none,
-                                      get_students_or_none)
+                                      get_students_or_none, save_student_face_photo,
+                                      delete_students, create_student, create_students,
+                                      save_student_infos, get_object_or_none, update_course,
+                                      )
 
 # Create your views here.
 
@@ -85,13 +88,48 @@ def manage_course_student(request, username: str, course_id: str):
     course_id = int(course_id)
     teacher = get_object_or_404(User, username=username)
     courses = get_courses_or_none(teacher=teacher)
-    students = get_students_or_none(course_id=course_id)
-    context['students'] = students
     for course in courses:
         if course.course_id == course_id:
             context['course'] = course
+    if not context['course']:
+        return render_to_response('404.html')
+    if request.method == 'POST':
+        if 'student_photo' in request.FILES:
+            file_object = request.FILES['student_photo']
+            student_id = request.POST['stu_id']
+            student_name = request.POST['stu_name']
+            student_class = request.POST['stu_class']
+            create_student(student_id, student_name, student_class, context['course'])
+            result = save_student_face_photo(file_object, student_id=student_id, student_name=student_name)
+            context['msg'] = result['msg']
+        elif 'students_excel_file' in request.FILES:
+            #TODO 传输照片压缩包
+            file_object = request.FILES['students_excel_file']
+            file_path, result = save_student_infos(file_object, username)
+            if result:
+                if create_students(file_path, course=context['course']):
+                    context['msg'] = '创建学生成功!'
+                else:
+                    context['msg'] = '创建学生失败!'
+            else:
+                context['msg'] = '上传的文件格式错误，请上传 *.xls或 *.xlsx文件！'
+        else:     # delete all (student_ids)
+            delete_student_ids = request.POST['delete_student_ids'].split('_')
+            fail_list = delete_students(student_ids=delete_student_ids)
+            if not fail_list:
+                context['msg'] = '删除学生成功!'
+            else:
+                context['msg'] = f"删除 {', '.join(fail_list)} 学生失败!"
+    students = get_students_or_none(course_id=course_id)
+    context['students'] = students
+    context['course'] = update_course(course=context['course'])
     for student in students:
-        sc = get_object_or_404(StudentCourse, student=student, course=course)
+        sc = get_object_or_404(StudentCourse, student=student, course=context['course'])
+        sp = get_object_or_none(StudentPicture, student=student)
+        if sp:
+            student.student_picture_status = True
+        else:
+            student.student_picture_status = False
         student.attendance_times = sc.attendance_times
         student.absent_times = sc.absent_times
     return render(request, 'Class_Member.html', context=context)

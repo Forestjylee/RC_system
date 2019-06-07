@@ -149,6 +149,21 @@ class FaceImageHandler(object):
         cv2.destroyAllWindows()
 
     @classmethod
+    def convert_to_png(cls, image_path: str) -> bool:
+        """
+        将图片格式转化为png
+        :param image_path: 图片文件路径
+        :return: 是否转换成功
+        """
+        try:
+            img = cv2.imread(image_path)
+            filename, _ = image_path.split('.')
+            cv2.imwrite(filename+'.png', img)
+            return True
+        except:
+            return False
+
+    @classmethod
     def encoding_face(cls, image_path: str) -> ndarray:
         """
         已知图片中只有一张人脸的情况下使用

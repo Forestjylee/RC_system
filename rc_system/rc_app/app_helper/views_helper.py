@@ -177,22 +177,53 @@ def update_student_course(student: Student, course: Course, is_absent: bool) -> 
     return True
 
 
-def save_student_face_photos(username: str):
+def update_course(course: Course) -> Course:
     """
+    遍历StudentCourse表，得出当前Course的总人数
+    :param course: 课程对象
+    :return: 更新后的Course对象
+    """
+    course.student_amount = len(StudentCourse.objects.filter(course=course))
+    course.save()
+    return course
+
+
+def delete_students(student_ids: list) -> list:
+    """
+    在数据库中删除学生的基本信息、缺勤情况、照片信息、学生课程对应关系
+    (Student, StudentAbsentSituation, StudentPicture, StudentCourse)
+    :param student_ids: 学生id
+    :return: 未成功删除的学生列表
+    """
+    fail_list = []
+    for student_id in student_ids:
+        student = get_object_or_none(Student, student_id=student_id)
+        if student:
+            StudentPicture.objects.filter(student=student).delete()
+            StudentCourse.objects.filter(student=student).delete()
+            StudentAbsentSituation.objects.filter(student=student).delete()
+        else:
+            fail_list.append(student_id)
+    return fail_list
+
+
+def save_student_face_photos():
+    """
+    学生的相片存放在media/student_face_pictures,以学号_姓名.png命名
     将临时存放学生相片的文件夹中的图片保存到数据库中
-    :param username: 老师用户名
     :return: 是否保存成功
     """
-    file_directory = _get_user_upload_file_directory(username)
+    file_directory = _get_student_picture_directory()
     source_directory = os.path.join(file_directory, 'temp_student_photos')
     file_names = os.listdir(source_directory)
     for file_name in file_names:
         student_id, student_name = _get_student_id_and_name(file_name)
         temp_file_path = os.path.join(source_directory, file_name)
         encoding_face = FaceImageHandler.encoding_face(image_path=temp_file_path)
-        if encoding_face:
+        if encoding_face is not None:
             file_path = os.path.join(file_directory, file_name)
             shutil.copy(temp_file_path, file_path)
+            FaceImageHandler.convert_to_png(image_path=file_path)
             student = get_object_or_none(Student, student_id=student_id, name=student_name)
             if student:
                 sp = get_object_or_none(StudentPicture, student=student)
@@ -248,6 +279,7 @@ def save_compressed_upload_student_face_photos(file_obj, username: str) -> bool:
     :return: 是否保存成功
     """
     target_directory = os.path.join(_get_user_upload_file_directory(username), 'temp_student_photos')
+    os.makedirs(target_directory, exist_ok=True)
     file_directory = _get_user_upload_file_directory(username)
     file_type = os.path.splitext(file_obj.name)[-1]
     if file_type != '.zip':
@@ -261,11 +293,11 @@ def save_compressed_upload_student_face_photos(file_obj, username: str) -> bool:
         return False
 
 
-# noinspection PyTypeChecker
 def save_student_face_photo(file_obj, student_id: str, student_name: str) -> dict:
     """
     1、保存上传的单张学生人脸图片
     2、将图片序列化后保存到数据库中
+    3、将学生的相片存放在media/student_face_pictures,以学号_姓名.png命名
     :param file_obj: 文件对象
     :param student_id: 学生的学号
     :param student_name: 学生的姓名
@@ -274,14 +306,17 @@ def save_student_face_photo(file_obj, student_id: str, student_name: str) -> dic
         'msg': 描述信息
     }
     """
-    file_directory = os.path.join(os.path.join(settings.BASE_DIR, 'media'), 'student_face_pictures')
+    file_directory = _get_student_picture_directory()
     file_type = os.path.splitext(file_obj.name)[-1]
     filename = f"{student_id}_{student_name}{file_type}"
     filepath = os.path.join(file_directory, filename)
     result = _save_upload_file(file_obj, filepath)
+    result = FaceImageHandler.convert_to_png(image_path=filepath) if result else False
     if result:
+        shutil.rmtree(filepath, ignore_errors=True)
+        filepath = f"{filepath.split('.')[0]}.png"
         encoding_face = FaceImageHandler.encoding_face(image_path=filepath)
-        if encoding_face:
+        if encoding_face is not None:
             student = get_object_or_none(Student, student_id=student_id, name=student_name)
             if student:
                 sp = get_object_or_none(StudentPicture, student=student)
@@ -293,15 +328,15 @@ def save_student_face_photo(file_obj, student_id: str, student_name: str) -> dic
                 sp.save()
                 return {
                             'status': True,
-                            'msg': '图片上传成功'
+                            'msg': '创建学生成功！'
                 }
         return {
             'status': False,
-            'msg': '上传的图片中没有人脸，请重新上传'
+            'msg': '上传的学生图片中没有人脸，请重新上传！'
         }
     return {
         'status': False,
-        'msg': '图片传输出错，请重新上传文件'
+        'msg': '图片传输出错，请重新上传文件！'
     }
 
 
@@ -340,6 +375,16 @@ def _get_user_upload_file_directory(username: str) -> str:
     :return: 文件夹路径
     """
     file_directory = os.path.join(os.path.join(settings.BASE_DIR, 'upload'), username)
+    os.makedirs(file_directory, exist_ok=True)
+    return file_directory
+
+
+def _get_student_picture_directory() -> str:
+    """
+    获取存储学生上传照片的文件夹路径
+    :return: 文件夹路径
+    """
+    file_directory = os.path.join(os.path.join(settings.BASE_DIR, 'media'), 'student_face_pictures')
     os.makedirs(file_directory, exist_ok=True)
     return file_directory
 
