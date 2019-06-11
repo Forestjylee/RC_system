@@ -1,5 +1,4 @@
 import datetime
-from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
@@ -48,6 +47,7 @@ def home_page(request, username: str, course_index: str):
     context['username'] = username
     context['courses'] = courses
     context['index'] = course_index
+    context['course'] = courses[course_index]
     if courses:
         if course_index >= len(courses):
             return render_to_response('404.html')
@@ -70,9 +70,13 @@ def home_page(request, username: str, course_index: str):
 
 
 @login_required
-def specific_name_list(request, username: str):
+def specific_name_list(request, username: str, course_id: str):
     """学生点名详细名单"""
-    return render(request, 'Specific_info.html', {'username': username})
+    context = {'username': username}
+    teacher = get_object_or_404(User, username=username)
+    course = get_object_or_404(Course, course_id=course_id)
+    context['course'] = course
+    return render(request, 'Specific_info.html', context)
 
 
 @login_required
