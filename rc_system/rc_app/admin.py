@@ -79,12 +79,12 @@ class StudentAbsentSituationAdmin(admin.ModelAdmin):
     is_ask_for_leave.short_description = '是否请假'
     # 自定义管理界面
     list_display = ['id', 'student', 'course', absent_or_late,
-                    is_ask_for_leave, 'create_time', 'last_updated_time']       # 显示在管理界面的列
+                    is_ask_for_leave, 'absent_time', 'last_updated_time']       # 显示在管理界面的列
     list_filter = ['student', 'course', 'absent_or_late', 'is_ask_for_leave']   # 数据过滤字段
     search_fields = ['course', 'student']                                       # 数据搜索字段
     list_per_page = 20
 
     # 添加，修改数据项时有分栏目的效果
     fieldsets = [
-        ("缺席情况", {"fields": ['student', 'course', 'absent_or_late', 'is_ask_for_leave']}),
+        ("缺席情况", {"fields": ['student', 'course', 'absent_or_late', 'is_ask_for_leave', 'absent_time']}),
     ]

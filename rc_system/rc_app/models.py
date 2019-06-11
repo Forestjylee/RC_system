@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -34,7 +35,7 @@ class Course(models.Model):
     last_updated_time = models.DateTimeField(auto_now=True, verbose_name="最后更新时间")
 
     def __str__(self):
-        return f"{self.course_id}-{self.name}"
+        return f"{self.teacher}-{self.name}"
 
     class Meta:
         verbose_name_plural = '课程'       # 在管理界面中表的名字
@@ -81,6 +82,7 @@ class StudentAbsentSituation(models.Model):
                                          choices=((True, '缺席'), (False, '迟到')))     # 默认缺席(True)
     is_ask_for_leave = models.BooleanField(verbose_name="是否请假", default=False,
                                            choices=((True, '已请假'), (False, '未请假')))
+    absent_time = models.DateTimeField(verbose_name="缺勤时间", default=timezone.now)
     create_time = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     last_updated_time = models.DateTimeField(verbose_name="最后修改时间", auto_now=True)
 

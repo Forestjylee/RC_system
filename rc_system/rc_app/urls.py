@@ -24,7 +24,7 @@ urlpatterns = [
     path('manage_course/<username>/', views.manage_course, name='管理课程'),
     path('manage_course_student/<username>/<course_id>/', views.manage_course_student, name='管理课程中的学生'),
     path('manage_student/<username>/', views.manage_student, name='管理学生'),
-    path('absent_record/<username>/<student_id>/', views.absent_record, name='缺勤记录')
+    path('absent_record/<username>/<course_name>/<student_id>/', views.absent_record, name='缺勤记录')
 ]
 
 handler404 = views.page_not_found

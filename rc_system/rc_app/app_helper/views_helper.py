@@ -10,6 +10,7 @@ import pickle
 import shutil
 from datetime import datetime
 from django.conf import settings
+from django.utils import timezone
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 
@@ -126,36 +127,43 @@ def create_student(student_id: str, student_name: str, class_name: str, course: 
 
 
 # @deal_exceptions(return_when_exceptions=False)
-def create_course(course_name: str, teacher: User, student_amount: int) -> bool:
+def create_course(course_name: str, teacher: User, course_time: str) -> bool:
     """
     创建课程
     :param course_name: 课程名称
     :param teacher: 老师
-    :param student_amount: 学生总人数
+    :param course_time: 上课时间
     :return: 是否创建成功
     """
-    course = get_object_or_none(Course, course_name=course_name, teacher=teacher)
+    course = get_object_or_none(Course, name=course_name, teacher=teacher)
     if not course:
         course = Course()
-        course.name = course_name
         course.teacher = teacher
-    course.student_amount = student_amount
+    course.name = course_name
+    course.course_time = course_time
+    update_course(course)
     course.save()
     return True
 
 
-def create_student_absent_situation(student: Student, course: Course, absent_or_late: bool) -> None:
+def create_student_absent_situation(student: Student, course: Course, absent_time: str, absent_or_late: bool, is_ask_for_leave: bool) -> None:
     """
     创建学生缺席情况记录
     :param student: 学生
     :param course: 课程
+    :param absent_time: 缺勤时间
     :param absent_or_late: 缺席或迟到
+    :param is_ask_for_leave: 是否已请假
     :return: None
     """
-    sas = StudentAbsentSituation()
-    sas.student = student
-    sas.course = course
+    sas = get_object_or_none(StudentAbsentSituation, student=student, course=course, absent_time=absent_time)
+    if not sas:
+        sas = StudentAbsentSituation()
+        sas.student = student
+        sas.course = course
+    sas.absent_time = absent_time
     sas.absent_or_late = absent_or_late
+    sas.is_ask_for_leave = is_ask_for_leave
     sas.save()
 
 

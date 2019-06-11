@@ -1,16 +1,17 @@
+import datetime
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
 
-from .models import User, Student, StudentCourse, StudentPicture, StudentAbsentSituation
+from .models import User, Student, Course, StudentCourse, StudentPicture, StudentAbsentSituation
 from .app_helper.decorators import is_post_or_get
 from .app_helper.views_helper import (get_user_or_none,  save_upload_face_photo,
                                       detect_and_compare_faces, get_courses_or_none,
                                       get_students_or_none, save_student_face_photo,
                                       delete_students, create_student, create_students,
                                       save_student_infos, get_object_or_none, update_course,
-                                      )
+                                      create_course, create_student_absent_situation)
 
 # Create your views here.
 
@@ -61,7 +62,10 @@ def home_page(request, username: str, course_index: str):
             else:
                 context['file_type'] = file_type
                 context['face_amount'] = face_amount
-                context['attendance_rate'] = round(face_amount / context['student_amount'], 4) * 100
+                if context['student_amount']:
+                    context['attendance_rate'] = round(face_amount / context['student_amount'], 4) * 100
+                else:
+                    context['attendance_rate'] = 0
     return render(request, 'face.html', context=context)
 
 
@@ -76,8 +80,19 @@ def manage_course(request, username: str):
     """管理课程(个人中心)"""
     context = {'username': username}
     teacher = get_object_or_404(User, username=username)
-    courses = get_courses_or_none(teacher=teacher)
-    context['courses'] = courses
+    if request.method == 'POST':
+        if 'delete_courses' in request.POST:
+            courses_to_delete = request.POST['delete_courses'].split('!')
+            courses = get_courses_or_none(teacher=teacher)
+            for course in courses:
+                if course.name in courses_to_delete:
+                    course.delete()
+            context['msg'] = f"删除{'，'.join(courses_to_delete)}课程成功!"
+        else:     # 创建或修改课程信息
+            course_info = request.POST['create_or_modify_course'].split('!')
+            result = create_course(course_name=course_info[0], teacher=teacher, course_time=course_info[1])
+            context['msg'] = '操作成功!' if result else '操作失败，请重试!'
+    context['courses'] = get_courses_or_none(teacher=teacher)
     return render(request, 'Class_Info.html', context=context)
 
 
@@ -142,11 +157,31 @@ def manage_student(request, username: str):
 
 
 @login_required
-def absent_record(request, username: str, student_id: str):
+def absent_record(request, username: str, course_name: str, student_id: str):
     """缺勤记录"""
     context = {'username': username}
+    teacher = get_object_or_404(User, username=username)
     student = get_object_or_404(Student, student_id=student_id)
+    course = get_object_or_404(Course, teacher=teacher, name=course_name)
+    student_absent_records = StudentAbsentSituation.objects.filter(student=student)
+    if request.method == 'POST':
+        if 'delete_absent_records' in request.POST:
+            delete_absent_records = request.POST['delete_absent_records'].split('_')
+            for student_absent_record in student_absent_records:
+                if (student_absent_record.absent_time+datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S") in delete_absent_records:
+                    student_absent_record.delete()
+            context['msg'] = '删除缺勤记录成功!'
+        else:
+            absent_date = request.POST['absent_date']
+            absent_time = request.POST['absent_time']
+            is_ask_for_leave = True if request.POST['is_ask_for_leave'] == 'true' else False
+            create_student_absent_situation(student=student, course=course,
+                                            absent_time=f"{absent_date} {absent_time}:00",
+                                            absent_or_late=True, is_ask_for_leave=is_ask_for_leave)
+            context['msg'] = '创建缺席记录成功!'
+    student_absent_records = StudentAbsentSituation.objects.filter(student=student)
     context['student'] = student
+    context['absent_records'] = student_absent_records
     return render(request, 'Absent_Record.html', context=context)
 
 

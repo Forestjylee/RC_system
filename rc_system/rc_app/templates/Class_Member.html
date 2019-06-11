@@ -67,17 +67,17 @@
                     <input type="text" name="stu_id" id="f1_id" style="opacity:0;pointer-events: none;display: none"/>
                     <input type="text" name="stu_name" id="f1_name" style="opacity:0;pointer-events: none;display: none"/>
                     <input type="text" name="stu_class" id="f1_class" style="opacity:0;pointer-events: none;display: none"/>
-                    <input type="file" name="student_photo" class="f1" style="opacity:0;pointer-events: none;"/>
+                    <input type="file" name="student_photo" class="f1" style="opacity:0;pointer-events: none;display: none;"/>
                     <button class="upload1" type="submit" style="display: none"></button>
             </form>
             <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="file" name="students_excel_file" class="f2" style="opacity:0;pointer-events: none;"/>
+                    <input type="file" name="students_excel_file" class="f2" style="opacity:0;pointer-events: none;display: none;"/>
                     <button class="upload2" type="submit" style="display: none"></button>
             </form>
             <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="text" name="delete_student_ids" id="f3" style="opacity:0;pointer-events: none;"/>
+                    <input type="text" name="delete_student_ids" id="f3" style="opacity:0;pointer-events: none;display: none"/>
                     <button class="upload3" type="submit" style="display: none"></button>
             </form>
             <table id="specific_info" class="display" >
@@ -97,7 +97,7 @@
                         <tr>
                             <td></td>
                             <td>{{ student.student_id }}</td>
-                            <td><a style="color: #0c7ed9; text-decoration: underline" href = "{% url 'rc_app:缺勤记录' username student.student_id %}">{{ student.name }}</a></td>
+                            <td><a style="color: #0c7ed9; text-decoration: underline" href = "{% url 'rc_app:缺勤记录' username course.name student.student_id %}">{{ student.name }}</a></td>
                             <td>{{ student.attendance_times }}</td>
                             <td>{{ student.absent_times }}</td>
                             {% if student.student_picture_status %}
