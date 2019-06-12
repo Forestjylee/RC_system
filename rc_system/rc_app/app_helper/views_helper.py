@@ -78,6 +78,7 @@ def get_students_or_none(course_id: int) -> list:
     return students
 
 
+# @deal_exceptions(return_when_exceptions=False)
 def create_students(filepath: str, course: Course) -> bool:
     """
     从Excel表中读取并创建多个学生
@@ -215,23 +216,35 @@ def delete_students(student_ids: list) -> list:
     return fail_list
 
 
-def save_student_face_photos():
+def save_student_face_photos(source_directory: str, course: Course) -> str:
     """
+    检查是否有Excel文件在压缩包中，有则用来创建学生
     学生的相片存放在media/student_face_pictures,以学号_姓名.png命名
     将临时存放学生相片的文件夹中的图片保存到数据库中
-    :return: 是否保存成功
+    :param source_directory: 存放解压后信息的文件夹名称
+    :param course: 课程对象
+    :return:
     """
     file_directory = _get_student_picture_directory()
-    source_directory = os.path.join(file_directory, 'temp_student_photos')
-    file_names = os.listdir(source_directory)
-    for file_name in file_names:
-        student_id, student_name = _get_student_id_and_name(file_name)
-        temp_file_path = os.path.join(source_directory, file_name)
+    for file_path in os.listdir(source_directory):     # 遍历找到Excel文件进行创建学生
+        fn, ft = os.path.splitext(file_path)
+        if ft in ['.xlsx', '.xls']:
+            temp_file_path = os.path.join(source_directory, file_path)
+            result = create_students(filepath=temp_file_path, course=course)
+            if not result:
+                return '创建学生失败，请检查您的Excel表格是否符合格式！'
+            os.remove(temp_file_path)
+            break
+    for file_path in os.listdir(source_directory):
+        fn, ft = os.path.splitext(file_path)
+        temp_file_path = os.path.join(source_directory, file_path)
+        student_id, student_name = fn.split('_')
         encoding_face = FaceImageHandler.encoding_face(image_path=temp_file_path)
         if encoding_face is not None:
-            file_path = os.path.join(file_directory, file_name)
+            file_path = os.path.join(file_directory, file_path)
             shutil.copy(temp_file_path, file_path)
             FaceImageHandler.convert_to_png(image_path=file_path)
+            os.remove(file_path)
             student = get_object_or_none(Student, student_id=student_id, name=student_name)
             if student:
                 sp = get_object_or_none(StudentPicture, student=student)
@@ -241,6 +254,7 @@ def save_student_face_photos():
                 sp.face_picture_path = file_path
                 sp.encoding_face = pickle.dumps(encoding_face)
                 sp.save()
+    return '创建学生成功!'
 
 
 @deal_exceptions(return_when_exceptions=(None, None))
@@ -273,32 +287,27 @@ def save_student_infos(file_obj, username: str) -> tuple:
     file_type = os.path.splitext(file_obj.name)[-1]
     filename = f"{str(datetime.now())}{file_type}"
     filepath = os.path.join(file_directory, filename)
-    if file_type not in ['.xlsx', 'xls']:
-        return filepath, False
     return filepath, _save_upload_file(file_obj, filepath)
 
 
-def save_compressed_upload_student_face_photos(file_obj, username: str) -> bool:
+def save_compressed_student_infos(file_obj, username: str) -> tuple:
     """
     1、将上传的包含多个学生照片的压缩包保存到upload/username/目录下
     2、解压到upload/username/temp_student_photos/目录下
     :param file_obj: 文件对象
     :param username: 老师用户名
-    :return: 是否保存成功
+    :return: 解压到的文件夹路径, 是否解压成功
     """
-    target_directory = os.path.join(_get_user_upload_file_directory(username), 'temp_student_photos')
-    os.makedirs(target_directory, exist_ok=True)
+    now_datetime = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    target_directory = os.path.join(os.path.join(_get_user_upload_file_directory(username), 'student_infos'), now_datetime)
     file_directory = _get_user_upload_file_directory(username)
-    file_type = os.path.splitext(file_obj.name)[-1]
-    if file_type != '.zip':
-        return False
-    filename = f"{str(datetime.now())}.zip"
+    filename = f"{now_datetime}.zip"
     filepath = os.path.join(file_directory, filename)
     _save_upload_file(file_obj, filepath)
     if decompress_zip(filepath, target_directory=target_directory):
-        return True
+        return target_directory, True
     else:
-        return False
+        return target_directory, False
 
 
 def save_student_face_photo(file_obj, student_id: str, student_name: str) -> dict:
@@ -407,16 +416,3 @@ def _get_marked_photo_filepath(username: str, file_type) -> str:
     file_directory = os.path.join(os.path.join(settings.BASE_DIR, 'media'), username)
     os.makedirs(file_directory, exist_ok=True)
     return os.path.join(file_directory, f"marked_face.{file_type}")
-
-
-@deal_exceptions(return_when_exceptions=None)
-def _get_student_id_and_name(file_name: str) -> tuple:
-    """
-    从学生的照片命名中获取学生的学号和姓名
-    照片命名格式：20163060xxxx_李某.png
-    :param file_name: 文件名
-    :return: 学生的id和姓名
-    """
-    file_name = os.path.splitext(file_name)[0]
-    student_id, name = file_name.split('_')
-    return student_id, name
