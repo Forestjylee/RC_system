@@ -1,4 +1,6 @@
 import datetime
+import os
+
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
@@ -10,7 +12,8 @@ from .app_helper.views_helper import (get_user_or_none,  save_upload_face_photo,
                                       get_students_or_none, save_student_face_photo,
                                       delete_students, create_student, create_students,
                                       save_student_infos, get_object_or_none, update_course,
-                                      create_course, create_student_absent_situation)
+                                      create_course, create_student_absent_situation,
+                                      save_compressed_student_infos, save_student_face_photos)
 
 # Create your views here.
 
@@ -121,17 +124,17 @@ def manage_course_student(request, username: str, course_id: str):
             create_student(student_id, student_name, student_class, context['course'])
             result = save_student_face_photo(file_object, student_id=student_id, student_name=student_name)
             context['msg'] = result['msg']
-        elif 'students_excel_file' in request.FILES:
-            #TODO 传输照片压缩包
-            file_object = request.FILES['students_excel_file']
-            file_path, result = save_student_infos(file_object, username)
-            if result:
-                if create_students(file_path, course=context['course']):
-                    context['msg'] = '创建学生成功!'
-                else:
-                    context['msg'] = '创建学生失败!'
+        elif 'students_info_file' in request.FILES:
+            file_object = request.FILES['students_info_file']
+            file_type = os.path.splitext(file_object.name)[-1]
+            if file_type == '.zip':
+                directory, result = save_compressed_student_infos(file_object, username)
+                context['msg'] = save_student_face_photos(source_directory=directory, course=context['course'])
+            elif file_type in ['.xls', '.xlsx']:
+                file_path, result = save_student_infos(file_object, username)
+                context['msg'] = '创建学生成功!' if create_students(file_path, course=context['course']) else '创建学生失败!'
             else:
-                context['msg'] = '上传的文件格式错误，请上传 *.xls或 *.xlsx文件！'
+                context['msg'] = '上传的文件格式错误，请上传 *.zip或 *.xlsx文件！'
         else:     # delete all (student_ids)
             delete_student_ids = request.POST['delete_student_ids'].split('_')
             fail_list = delete_students(student_ids=delete_student_ids)
