@@ -59,8 +59,10 @@ def decompress_zip(filepath: str, target_directory: str) -> bool:
     shutil.rmtree(target_directory, ignore_errors=True)
     os.makedirs(target_directory, exist_ok=True)
     for name in f.namelist():
+        if '__MACOSX' in name:
+            continue
         f.extract(name, target_directory)
         old_path = os.path.join(target_directory, name)
-        new_name = os.path.join(target_directory, name.encode('cp437').decode('gbk'))  # 解决中文乱码问题
+        new_name = os.path.join(target_directory, name.encode('cp437').decode('utf8'))  # 解决中文乱码问题
         os.rename(old_path, new_name)
     return True
