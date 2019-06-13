@@ -110,7 +110,8 @@
                                 <u><a style="color: #0c7ed9; font-family: 等线" href="{% url 'rc_app:详细名单' username course.course_id filepath %}" target="_blank">名单详情</a></u>
                             </div>
                     </div>
-                    <table id="unshow_student_message" >
+                    <div style="height: 400px;width: 320px;overflow-y: scroll;">
+                        <table id="unshow_student_message">
                         <thead>
                         <tr>
                             <th>学号 </th>
@@ -128,6 +129,8 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    </div>
+
                 {% endif %}
                 </div>
             </div>
