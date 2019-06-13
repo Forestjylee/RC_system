@@ -15,7 +15,7 @@ from .app_helper.views_helper import (get_user_or_none,  save_upload_face_photo,
                                       save_student_infos, get_object_or_none, update_course,
                                       create_course, create_student_absent_situation,
                                       save_compressed_student_infos, save_student_face_photos,
-                                      get_compare_faces_result)
+                                      get_compare_faces_result, update_compare_faces_result)
 
 # Create your views here.
 
@@ -52,11 +52,13 @@ def home_page(request, username: str, course_index: str):
     context['username'] = username
     context['courses'] = courses
     context['index'] = course_index
-    context['course'] = courses[course_index]
     if courses:
+        context['course'] = courses[course_index]
         if course_index >= len(courses):
             return render_to_response('404.html')
         context['student_amount'] = courses[course_index].student_amount
+    else:
+        return redirect('rc_app:管理课程', username=username)
     if request.method == 'POST':
         file_obj = request.FILES.get('face_photo')
         filepath, result = save_upload_face_photo(file_obj, username)
@@ -86,6 +88,36 @@ def specific_name_list(request, username: str, course_id: str, filepath: str):
     course = get_object_or_404(Course, course_id=course_id)
     context['course'] = course
     context['specific_infos'] = get_compare_faces_result(username, filepath)
+    if request.method == 'POST':
+        if 'to_attendance_student_ids' in request.POST:
+            attendance_student_ids = request.POST['to_attendance_student_ids'].split('_')
+            for specific_info in context['specific_infos']:
+                if specific_info['student'].student_id in attendance_student_ids:
+                    print(123123)
+                    if specific_info['absent_situation'] == '未到场':
+                        specific_info['sas'].delete()
+                        sc = get_object_or_none(StudentCourse, student=specific_info['student'], course=course)
+                        sc.absent_times -= 1
+                        sc.attendance_times += 1
+                        sc.save()
+                        specific_info['attendance_times'] += 1
+                        specific_info['absent_situation'] = '到场'
+        else:
+            absent_student_ids = request.POST['to_absent_student_ids'].split('_')
+            for specific_info in context['specific_infos']:
+                if specific_info['student'].student_id in absent_student_ids:
+                    if specific_info['absent_situation'] == '到场':
+                        sc = get_object_or_none(StudentCourse, student=specific_info['student'], course=course)
+                        sc.absent_times += 1
+                        sc.attendance_times -= 1
+                        sc.save()
+                        sas = StudentAbsentSituation()
+                        sas.student = sc.student
+                        sas.course = course
+                        sas.save()
+                        specific_info['attendance_times'] -= 1
+                        specific_info['absent_situation'] = '未到场'
+        update_compare_faces_result(username, filepath, context['specific_infos'])
     return render(request, 'Specific_Info.html', context)
 
 
@@ -107,6 +139,8 @@ def manage_course(request, username: str):
             result = create_course(course_name=course_info[0], teacher=teacher, course_time=course_info[1])
             context['msg'] = '操作成功!' if result else '操作失败，请重试!'
     context['courses'] = get_courses_or_none(teacher=teacher)
+    if not context['courses']:
+        context['msg'] = '系统检测到您还没有创建过课程，请先创建课程~'
     return render(request, 'Class_Info.html', context=context)
 
 
@@ -150,24 +184,21 @@ def manage_course_student(request, username: str, course_id: str):
             else:
                 context['msg'] = f"删除 {', '.join(fail_list)} 学生失败!"
     students = get_students_or_none(course_id=course_id)
-    context['students'] = students
-    context['course'] = update_course(course=context['course'])
-    for student in students:
-        sc = get_object_or_404(StudentCourse, student=student, course=context['course'])
-        sp = get_object_or_none(StudentPicture, student=student)
-        if sp:
-            student.student_picture_status = True
-        else:
-            student.student_picture_status = False
-        student.attendance_times = sc.attendance_times
-        student.absent_times = sc.absent_times
+    if students:
+        context['students'] = students
+        context['course'] = update_course(course=context['course'])
+        for student in students:
+            sc = get_object_or_404(StudentCourse, student=student, course=context['course'])
+            sp = get_object_or_none(StudentPicture, student=student)
+            if sp:
+                student.student_picture_status = True
+            else:
+                student.student_picture_status = False
+            student.attendance_times = sc.attendance_times
+            student.absent_times = sc.absent_times
+    else:
+        context['msg'] = '系统校测到该课程中还没有学生，请先导入学生信息~'
     return render(request, 'Class_Member.html', context=context)
-
-
-@login_required
-def manage_student(request, username: str):
-    """管理学生"""
-    return render(request, 'manage_student.html', {'username': username})
 
 
 @login_required
