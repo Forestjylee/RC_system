@@ -1,5 +1,6 @@
-import datetime
 import os
+import pickle
+import datetime
 
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -13,7 +14,8 @@ from .app_helper.views_helper import (get_user_or_none,  save_upload_face_photo,
                                       delete_students, create_student, create_students,
                                       save_student_infos, get_object_or_none, update_course,
                                       create_course, create_student_absent_situation,
-                                      save_compressed_student_infos, save_student_face_photos)
+                                      save_compressed_student_infos, save_student_face_photos,
+                                      get_compare_faces_result)
 
 # Create your views here.
 
@@ -59,10 +61,14 @@ def home_page(request, username: str, course_index: str):
         file_obj = request.FILES.get('face_photo')
         filepath, result = save_upload_face_photo(file_obj, username)
         if result:
-            file_type, face_amount = detect_and_compare_faces(username, filepath)
+            file_type, face_amount, pickle_filepath = detect_and_compare_faces(username, filepath, context['course'])
             if not file_type:
                 context['error'] = '暂不支持您上传的图片格式，请上传png、jpg、jpeg格式的图片'
             else:
+                if pickle_filepath:
+                    context['filepath'] = pickle_filepath
+                    attendance_result = get_compare_faces_result(username, pickle_filepath)
+                    context['attendance_result'] = attendance_result
                 context['file_type'] = file_type
                 context['face_amount'] = face_amount
                 if context['student_amount']:
@@ -73,13 +79,14 @@ def home_page(request, username: str, course_index: str):
 
 
 @login_required
-def specific_name_list(request, username: str, course_id: str):
+def specific_name_list(request, username: str, course_id: str, filepath: str):
     """学生点名详细名单"""
     context = {'username': username}
     teacher = get_object_or_404(User, username=username)
     course = get_object_or_404(Course, course_id=course_id)
     context['course'] = course
-    return render(request, 'Specific_info.html', context)
+    context['specific_infos'] = get_compare_faces_result(username, filepath)
+    return render(request, 'Specific_Info.html', context)
 
 
 @login_required
@@ -137,7 +144,7 @@ def manage_course_student(request, username: str, course_id: str):
                 context['msg'] = '上传的文件格式错误，请上传 *.zip或 *.xlsx文件！'
         else:     # delete all (student_ids)
             delete_student_ids = request.POST['delete_student_ids'].split('_')
-            fail_list = delete_students(student_ids=delete_student_ids)
+            fail_list = delete_students(student_ids=delete_student_ids, course=context['course'])
             if not fail_list:
                 context['msg'] = '删除学生成功!'
             else:

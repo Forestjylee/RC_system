@@ -100,39 +100,35 @@
                     %
                     {% endif %}
                 </div>
-                <div class="info_list">
-                    <div>
-                    <div style="position: relative; float: left; margin-left:10px ">
-                        <p style="color: red; font-family: 等线; font-size: 1.2em">未检测到学生名单:</p>
-                    </div>
-                        <div style="position: relative; float: right; margin-right:10px">
-                            <u><a style="color: #0c7ed9; font-family: 等线" href="{% url 'rc_app:详细名单' username course.course_id %}" target="_blank">名单详情</a></u>
+                {% if filepath %}
+                    <div class="info_list">
+                        <div>
+                        <div style="position: relative; float: left; margin-left:10px ">
+                            <p style="color: red; font-family: 等线; font-size: 1.2em">未检测到学生名单:</p>
                         </div>
-                </div>
-                <table id="unshow_student_message" >
-                    <thead>
-                    <tr>
-                        <th>学号 </th>
-                        <th>姓名</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {% for student in students %}
-                            <tr>
-                                <td>{{ student.student_id }}</td>
-                                <td>{{ student.name }}</td>
-                            </tr>
-                        {% endfor %}
+                            <div style="position: relative; float: right; margin-right:10px">
+                                <u><a style="color: #0c7ed9; font-family: 等线" href="{% url 'rc_app:详细名单' username course.course_id filepath %}" target="_blank">名单详情</a></u>
+                            </div>
+                    </div>
+                    <table id="unshow_student_message" >
+                        <thead>
                         <tr>
-                            <td>201630601111</td>
-                            <td>王小明</td>
+                            <th>学号 </th>
+                            <th>姓名</th>
                         </tr>
-                        <tr>
-                            <td>201630601111</td>
-                            <td>王小明</td>
-                        </tr>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for ar in attendance_result %}
+                                {% if ar.absent_situation == '未到场' %}
+                                    <tr>
+                                        <td>{{ ar.student.student_id }}</td>
+                                        <td>{{ ar.student.name }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
                 </div>
             </div>
         </div>
