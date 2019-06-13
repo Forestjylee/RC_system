@@ -78,6 +78,30 @@ def get_students_or_none(course_id: int) -> list:
     return students
 
 
+def get_compare_faces_result(username: str, pickle_filepath: str) -> list:
+    """
+    从序列化的文件中将点名的详细信息读取出来
+    :param username: 用户名
+    :param pickle_filepath: 保存点名详细信息的序列化文件
+    :return: 点名详细信息
+    """
+    file_directory = os.path.join(_get_user_upload_file_directory(username), 'specific_infos')
+    filepath = os.path.join(file_directory, pickle_filepath)
+    with open(filepath, 'rb') as f:
+        result = pickle.load(f)
+    return result
+
+
+# @deal_exceptions(return_when_exceptions=False)
+def update_compare_faces_result(username: str, pickle_filepath: str, new_result: list) -> bool:
+    """"""
+    file_directory = os.path.join(_get_user_upload_file_directory(username), 'specific_infos')
+    filepath = os.path.join(file_directory, pickle_filepath)
+    with open(filepath, 'wb') as f:
+        pickle.dump(new_result, f)
+    return True
+
+
 # @deal_exceptions(return_when_exceptions=False)
 def create_students(filepath: str, course: Course) -> bool:
     """
@@ -197,20 +221,20 @@ def update_course(course: Course) -> Course:
     return course
 
 
-def delete_students(student_ids: list) -> list:
+def delete_students(student_ids: list, course: Course) -> list:
     """
     在数据库中删除学生的基本信息、缺勤情况、照片信息、学生课程对应关系
     (Student, StudentAbsentSituation, StudentPicture, StudentCourse)
     :param student_ids: 学生id
+    :param course: 课程
     :return: 未成功删除的学生列表
     """
     fail_list = []
     for student_id in student_ids:
         student = get_object_or_none(Student, student_id=student_id)
         if student:
-            StudentPicture.objects.filter(student=student).delete()
-            StudentCourse.objects.filter(student=student).delete()
-            StudentAbsentSituation.objects.filter(student=student).delete()
+            StudentCourse.objects.filter(student=student, course=course).delete()
+            StudentAbsentSituation.objects.filter(student=student, course=course).delete()
         else:
             fail_list.append(student_id)
     return fail_list
@@ -257,23 +281,47 @@ def save_student_face_photos(source_directory: str, course: Course) -> str:
     return '创建学生成功!'
 
 
-@deal_exceptions(return_when_exceptions=(None, None))
-def detect_and_compare_faces(username: str, filepath: str) -> bool:
+# @deal_exceptions(return_when_exceptions=(None, None, None))
+def detect_and_compare_faces(username: str, filepath: str, course: Course) -> tuple:
     """
     人脸检测和比对
     :param username: 用户名
     :param filepath: 需要检测图片的绝对路径
+    :param course: 课程对象
     :return: 检测结果和对比结果
     """
+    sps = []
     face_handler = FaceImageHandler(image_path=filepath)
     face_amount = face_handler.get_face_amount()
     file_type = face_handler._image_save_type
     face_handler.save_marked_image(
             filepath=_get_marked_photo_filepath(username, file_type=file_type)
     )
-    unknwon_encoding_faces = face_handler.encoding_faces()
-    return file_type, face_amount
-    #TODO 人脸比对
+    unknown_encoding_faces = face_handler.encoding_faces()
+    scs = StudentCourse.objects.filter(course=course)
+    for sc in scs:
+        sp = get_object_or_none(StudentPicture, student=sc.student)
+        if sp:
+            sps.append(sp)
+    if sps:
+        temp_record_index = []
+        attendance_infos = []
+        known_encoding_faces = []
+        for sp in sps:
+            known_encoding_faces.append(pickle.loads(sp.encoding_face))
+        for face in unknown_encoding_faces:
+            if len(temp_record_index) < len(known_encoding_faces):
+                compare_results = compare_faces(known_encoding_faces, unknown_encoding_face=face)
+                for compare_result in compare_results:     # 相似度尽量高(相似度下限为50，低于50则不加入出席列表)，与之前识别出的结果不重复
+                    if compare_result['known_face_index'] not in temp_record_index and compare_result['similarity'] > 50:
+                        attendance_infos.append(compare_result)
+                        temp_record_index.append(compare_result['known_face_index'])
+            else:
+                break
+        pickle_filepath = _save_as_pickle(username, sps, attendance_infos, course)
+    else:
+        pickle_filepath = None
+    return file_type, face_amount, pickle_filepath
 
 
 def save_student_infos(file_obj, username: str) -> tuple:
@@ -330,8 +378,8 @@ def save_student_face_photo(file_obj, student_id: str, student_name: str) -> dic
     result = _save_upload_file(file_obj, filepath)
     result = FaceImageHandler.convert_to_png(image_path=filepath) if result else False
     if result:
-        shutil.rmtree(filepath, ignore_errors=True)
-        filepath = f"{filepath.split('.')[0]}.png"
+        os.remove(filepath)
+        filepath = os.path.join(file_directory, f"{student_id}_{student_name}.png")
         encoding_face = FaceImageHandler.encoding_face(image_path=filepath)
         if encoding_face is not None:
             student = get_object_or_none(Student, student_id=student_id, name=student_name)
@@ -416,3 +464,55 @@ def _get_marked_photo_filepath(username: str, file_type) -> str:
     file_directory = os.path.join(os.path.join(settings.BASE_DIR, 'media'), username)
     os.makedirs(file_directory, exist_ok=True)
     return os.path.join(file_directory, f"marked_face.{file_type}")
+
+
+def _save_as_pickle(username: str, sps: list, attendance_infos: list, course: Course) -> str:
+    """
+    detect_and_compare_faces的辅助函数
+    目的在于将人脸比对后的结果序列化存储到本地的文件中一边详情页面读取并将结果记录到数据库中
+    :param sps: 学生照片信息列表
+    :param attendance_infos: 人脸比对的结果，格式为:
+    {'known_face_index': int, 'similarity': float}
+    :param course: 课程名称
+    :return: 保存的文件名
+    """
+    result = []
+    attendance_students = []
+    scs = list(StudentCourse.objects.filter(course=course))
+    file_directory = os.path.join(_get_user_upload_file_directory(username), 'specific_infos')
+    os.makedirs(file_directory, exist_ok=True)
+    file_path = os.path.join(file_directory, f"{str(datetime.now().strftime('%Y%m%d%H%M%S'))}.pkl")
+    for attendance_info in attendance_infos:
+        sp = sps[attendance_info['known_face_index']]
+        student = sp.student
+        temp = {
+            'similarity': attendance_info['similarity'],
+            'student': student,
+            'attendance_times': get_object_or_none(StudentCourse, student=student, course=course).attendance_times + 1,
+            'absent_situation': '到场'
+        }
+        attendance_students.append(student)
+        result.append(temp)
+    for sc in scs:
+        if sc.student in attendance_students:     # 出勤
+            sc.attendance_times += 1
+            sc.save()
+        else:     # 缺勤
+            sas = StudentAbsentSituation()
+            sas.student = sc.student
+            sas.course = course
+            sas.save()
+            sum_times = sc.attendance_times + sc.absent_times
+            temp = {
+                'student': sc.student,
+                'attendance_times': sc.attendance_times,
+                'similarity': round(1 - sc.attendance_times / sum_times, 4) * 100 if sum_times else 50.00,
+                'absent_situation': '未到场',
+                'sas': sas
+            }
+            sc.absent_times += 1
+            sc.save()
+            result.append(temp)
+    with open(file_path, 'wb') as f:
+        pickle.dump(result, f)
+    return file_path.split('/')[-1]
