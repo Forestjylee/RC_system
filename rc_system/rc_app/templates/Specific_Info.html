@@ -63,6 +63,16 @@
     </div>
         <hr>
         <div class="wrap" >
+            <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="text" name="to_attendance_student_ids" id="f1" style="opacity:0;pointer-events: none;display: none"/>
+                    <button class="upload1" type="submit" style="display: none"></button>
+            </form>
+            <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="text" name="to_absent_student_ids" id="f2" style="opacity:0;pointer-events: none;display: none"/>
+                    <button class="upload2" type="submit" style="display: none"></button>
+            </form>
             <table id="specific_info" class="display">
                 <thead>
                 <!--以下全改！！！2019.6.5修改-->
@@ -78,22 +88,16 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td></td>
-                    <td>201630601221</td>
-                    <td>王大明</td>
-                    <td>18</td>
-                    <td>未到场</td>
-                    <td>60%</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>201630601111</td>
-                    <td>王小明</td>
-                    <td>24</td>
-                    <td>到场</td>
-                    <td>50%</td>
-                </tr>
+                {% for specific_info in specific_infos %}
+                    <tr>
+                        <td></td>
+                        <td>{{ specific_info.student.student_id }}</td>
+                        <td><a style="color: #0c7ed9; text-decoration: underline" href = "{% url 'rc_app:缺勤记录' username course.name specific_info.student.student_id %}">{{ specific_info.student.name }}</a></td>
+                        <td>{{ specific_info.attendance_times }}</td>
+                        <td>{{ specific_info.absent_situation }}</td>
+                        <td>{{ specific_info.similarity }}%</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -174,11 +178,25 @@
     });
 
     function greenChange() {
-
+        let array = document.getElementsByClassName('selected');
+        let post_content = array[0].innerText.trim().split('\t')[0];
+        for(let i=1; i<array.length; i++){
+            post_content += '_' + array[i].innerText.trim().split('\t')[0];
+        }
+        let f3 = document.getElementById('f1');
+        f3.value = post_content;
+        $(".upload1").click();
     }
 
     function redChange() {
-
+        let array = document.getElementsByClassName('selected');
+        let post_content = array[0].innerText.trim().split('\t')[0];
+        for(let i=1; i<array.length; i++){
+            post_content += '_' + array[i].innerText.trim().split('\t')[0];
+        }
+        let f3 = document.getElementById('f2');
+        f3.value = post_content;
+        $(".upload2").click();
     }
 
     $(function () { $("[data-toggle='tooltip']").tooltip(); });
