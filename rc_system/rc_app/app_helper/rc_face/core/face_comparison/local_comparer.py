@@ -41,6 +41,6 @@ def compare_faces(known_encoding_faces: list, unknown_encoding_face: ndarray) ->
     for index, face_distance in enumerate(face_distances):
         result.append({
             'known_face_index': index,
-            'similarity': round(100*(1-face_distance), 4),
+            'similarity': round(1-face_distance, 4) * 100,
         })
     return sorted(result, key=lambda x: x['similarity'], reverse=True)
