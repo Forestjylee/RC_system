@@ -53,10 +53,13 @@ class FaceImageHandler(object):
         encoding那些人脸
         :return: 编码后的人脸(numpy数组)组成的列表
         """
-        return face_encodings(
-            face_image=self._original_image,
-            known_face_locations=self._face_locations
-        )
+        if self._face_locations:
+            return face_encodings(
+                face_image=self._original_image,
+                known_face_locations=self._face_locations
+            )
+        else:
+            return None
 
     def mark_faces(self) -> None:
         """
