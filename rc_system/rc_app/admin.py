@@ -34,9 +34,9 @@ class CourseAdmin(admin.ModelAdmin):
 
     # 自定义管理界面
     list_display = ['course_id', 'name', 'teacher', 'student_amount', 'course_time',
-                    'create_time', 'last_updated_time']    # 显示在管理界面的列
-    list_filter = ['teacher', 'name']                      # 数据过滤字段
-    search_fields = ['teacher', 'name']                    # 数据搜索字段
+                    'create_time', 'last_updated_time']              # 显示在管理界面的列
+    list_filter = ['teacher', 'name']                                # 数据过滤字段
+    search_fields = ['teacher__username', 'name']                    # 数据搜索字段
     list_per_page = 20
 
     # 添加，修改数据项时有分栏目的效果
@@ -50,7 +50,7 @@ class StudentCourseAdmin(admin.ModelAdmin):
 
     list_display = ['course', 'student', 'attendance_times', 'absent_times']
     list_filter = ['course']
-    search_fields = ['course']
+    search_fields = ['course__name']
     list_per_page = 20
 
     fieldsets = [
@@ -81,7 +81,7 @@ class StudentAbsentSituationAdmin(admin.ModelAdmin):
     list_display = ['id', 'student', 'course', absent_or_late,
                     is_ask_for_leave, 'absent_time', 'last_updated_time']       # 显示在管理界面的列
     list_filter = ['student', 'course', 'absent_or_late', 'is_ask_for_leave']   # 数据过滤字段
-    search_fields = ['course', 'student']                                       # 数据搜索字段
+    search_fields = ['course__name', 'student__student_id', 'student__name']    # 数据搜索字段
     list_per_page = 20
 
     # 添加，修改数据项时有分栏目的效果
