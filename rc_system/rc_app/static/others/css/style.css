@@ -73,10 +73,9 @@ p{
 #unshow_student_message
   {
   font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
-  width:100%;
     text-align: center;
     margin-left: 10px;
-    width: 300px;
+    width: 290px;
   }
 
 #unshow_student_message tr
