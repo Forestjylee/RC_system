@@ -165,12 +165,17 @@
             <div class="modal-body" style="">
                 <br>
                 使用说明：<br>
-                批量导入文件需上传包含学生信息的Excel文件，以及以学生“学号_姓名”命名的.jpg或.png格式照片。<br>
-                学生信息暂只支持Excel文件，格式按照使用“华南理工大学（教务处）”打印的学生名单，例如:<br>
-            </div>
-            <div class="modal-body" style="">
-                <br>
-                <img style="width: 70%;height: 70%;" src="{% static 'others/images/student_info_template.png' %}">
+                批量导入文件支持.7z, .zip, .rar等压缩文件格式；压缩文件中可包含以下格式的文件：<br>
+                1、以班级信息命名的支持Excel文件，其中包含了学生的相关信息，文件格式按照使用“华南理工大学（教务处）”打印的学生名单，例如:<br>
+                <div class="modal-body" style="">
+                    <br>
+                <img style="width: 70%;height: 70%;" src="{% static 'others/images/student_info_template.png' %}"><br>
+                </div>
+                2、以学生“学号_姓名”命名的.jpg或.png格式照片，例如：<br>
+                <div class="modal-body" style="">
+                    <br>
+                <img style="width: 70%;height: 70%;" src="{% static 'others/images/student_info_template2.png' %}"><br>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭
