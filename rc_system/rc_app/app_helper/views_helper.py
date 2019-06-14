@@ -316,6 +316,7 @@ def detect_and_compare_faces(username: str, filepath: str, course: Course) -> tu
                     if compare_result['known_face_index'] not in temp_record_index and compare_result['similarity'] > 50:
                         attendance_infos.append(compare_result)
                         temp_record_index.append(compare_result['known_face_index'])
+                        break
             else:
                 break
         pickle_filepath = _save_as_pickle(username, sps, attendance_infos, course)
