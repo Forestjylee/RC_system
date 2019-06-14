@@ -53,9 +53,9 @@ def home_page(request, username: str, course_index: str):
     context['courses'] = courses
     context['index'] = course_index
     if courses:
-        context['course'] = courses[course_index]
         if course_index >= len(courses):
             return render_to_response('404.html')
+        context['course'] = courses[course_index]
         context['student_amount'] = courses[course_index].student_amount
     else:
         return redirect('rc_app:管理课程', username=username)
@@ -93,7 +93,6 @@ def specific_name_list(request, username: str, course_id: str, filepath: str):
             attendance_student_ids = request.POST['to_attendance_student_ids'].split('_')
             for specific_info in context['specific_infos']:
                 if specific_info['student'].student_id in attendance_student_ids:
-                    print(123123)
                     if specific_info['absent_situation'] == '未到场':
                         specific_info['sas'].delete()
                         sc = get_object_or_none(StudentCourse, student=specific_info['student'], course=course)
